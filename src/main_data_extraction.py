@@ -124,8 +124,12 @@ if __name__=='__main__':
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
    ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_BUILD_CONTENT.csv'
-   key_to_look = 'build'
+   # following already completed
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_BUILD_CONTENT.csv'
+   # key_to_look = 'build'
+
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_TEST_CONTENT.csv'
+   key_to_look = 'test'
 
    # key_to_look = 'edit'
    get_all_data(ds_path, key_to_look, file2save)
