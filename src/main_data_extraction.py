@@ -16,7 +16,9 @@ def giveTimeStamp():
   return strToret
 
 def getHeaderStr(key_param):
-    headerDict = {'build':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,BUILD_RES,BUILD_DURA', 'edit':'', 'test':'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA'}
+    headerDict = {'build':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,BUILD_RES,BUILD_DURA',
+                  'edit':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,CNG_SIZE,CNG_CNT',
+                  'test':'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA'}
     return headerDict[key_param]
 
 def dumpContentIntoFile(strP, fileP):
@@ -59,6 +61,19 @@ def getBuildDataFromDict(dict_param):
     #print str2Write
     return str2Write
 
+def getEditDataFromDict(dict_param):
+    str2Write = ''
+    if( ('IDESessionUUID' in dict_param) and ('SizeOfChanges' in dict_param) and ('Duration' in dict_param) and ('TriggeredAt' in dict_param) and ('NumberOfChanges' in dict_param) and ('ActiveDocument' in dict_param)):
+        sessID      = dict_param['IDESessionUUID']
+        docu        = dict_param['ActiveDocument']
+        dura_       = dict_param['Duration']
+        tstamp_     = dict_param['TriggeredAt']
+        change_size = dict_param['SizeOfChanges']
+        change_cnt  = dict_param['NumberOfChanges']
+        str2Write = str2Write + str(sessID) + ',' + str(docu) + ',' + str(dura_) + ',' + str(tstamp_) + ',' + str(change_size) + ',' + str(change_cnt) + ',' + '\n'
+
+    return str2Write
+
 
 def readJSONFileContent(json_path, key_to_see='test'):
     str2Write = ''
@@ -82,6 +97,11 @@ def readJSONFileContent(json_path, key_to_see='test'):
                        strFromDict = getTestDataFromDict(d_)
                     elif key_to_see=='build':
                        strFromDict = getBuildDataFromDict(d_)
+                    elif key_to_see=='edit':
+                       strFromDict = getEditDataFromDict(d_)
+                    else:
+                       strFromDict = ''
+                       print 'KEY IS WRONG ... CHECK!'
                     str2Write = str2Write + strFromDict
 
     print '-'*50
@@ -128,10 +148,13 @@ if __name__=='__main__':
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_BUILD_CONTENT.csv'
    # key_to_look = 'build'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_TEST_CONTENT.csv'
-   key_to_look = 'test'
+   # following already compelted
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_TEST_CONTENT.csv'
+   # key_to_look = 'test'
 
-   # key_to_look = 'edit'
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_CONTENT.csv'
+   key_to_look = 'edit'
+
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
    print '='*100
