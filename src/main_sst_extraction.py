@@ -10,6 +10,8 @@ import zipfile
 import json
 from ijson import items
 import shutil
+import numpy as np
+import math
 
 def giveTimeStamp():
   import time, datetime
@@ -19,7 +21,7 @@ def giveTimeStamp():
 
 def getHeaderStr(key_param):
     headerDict = {'hierarchy':'SESS_ID,TIME,PRO_HIE,DEL_HIE,MET_HIE,FIELDS,NES_TYP,EVE_HIE',
-                  'test':'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA'}
+                  'sst':'SESS_ID,TIME,MET_CNT,DEL_CNT,PRO_CNT,FIE_CNT,EVE_CNT,AVG_MET_DIF,MED_MET_DIF,AVG_MET_EFF,MED_MET_EFF,AVG_MET_VOC,MED_MET_VOC,AVG_MET_LEN,MED_MET_LEN'}
     return headerDict[key_param]
 
 def dumpContentIntoFile(strP, fileP):
@@ -50,8 +52,79 @@ def getHierarchyDataFromDict(dict_param):
 
     return str2Write
 
+def getOperaInfo(meth_body):
+   left_operand_list, right_operand_list, operator_list = [], [], []
+   meth_content_list=meth_body['Body']
+   for meth_content in meth_content_list:
+       if (('$type' in meth_content) and ('Expression' in meth_content)):
+           key2see = meth_content['$type'].lower()
+           if('assignment' in key2see):
+              expression_content =   meth_content['Expression']
+              if(('Operator' in expression_content) and ('LeftOperand' in expression_content) and ('RightOperand' in expression_content)):
+                  operator_list.append(expression_content['Operator'])
+                  if('Reference' in expression_content['LeftOperand']):
+                     if ('Identifier' in expression_content['LeftOperand']['Reference']):
+                        left_operand_list.append(expression_content['LeftOperand']['Reference']['Identifier'])
+                  if('Reference' in expression_content['RightOperand']):
+                     if ('Identifier' in expression_content['RightOperand']['Reference']):
+                        right_operand_list.append(expression_content['RightOperand']['Reference']['Identifier'])
+
+                        #print left_operand_list, right_operand_list, operator_list
+   return left_operand_list, right_operand_list, operator_list
+
 def getSSTDataFromDict(dict_param):
     str2Write = ''
+    if( ('IDESessionUUID' in dict_param) and ('TriggeredAt' in dict_param) and ('Context2' in dict_param)):
+        sessID      = dict_param['IDESessionUUID']
+        tstamp_     = dict_param['TriggeredAt']
+        cont_dict   = dict_param['Context2']
+        if('SST' in cont_dict):
+            sst_dict =cont_dict['SST']
+            #print sst_dict
+            if(('Methods' in sst_dict) and ('Delegates' in sst_dict) and ('Properties' in sst_dict) and ('Fields' in sst_dict) and ('Events' in sst_dict)):
+               meth_ls, dele_ls, prop_ls, fiel_ls, even_ls = sst_dict['Methods'], sst_dict['Delegates'], sst_dict['Properties'], sst_dict['Fields'], sst_dict['Events']
+               meth_cnt = len(meth_ls)
+               dele_cnt = len(dele_ls)
+               prop_cnt = len(prop_ls)
+               fiel_cnt = len(fiel_ls)
+               even_cnt = len(even_ls)
+               ### to get averga, median Halstead's metrics
+               difficulty, effort, vocabulary, leng =[], [], [], []
+               ### initialization
+               avg_diff, med_diff, avg_eff, med_eff  = 0, 0, 0, 0
+               avg_voc, med_voc, avg_len, med_len    = 0, 0 , 0, 0
+               for meth_body_ in meth_ls:
+                   left_operand_list, right_operand_list, operator_list  = getOperaInfo(meth_body_)
+                   operand_cnt= len(left_operand_list) + len(right_operand_list)
+                   operator_cnt = len(operator_list)
+                   uni_operator_cnt = len(np.unique(operator_list))
+                   uni_operand_cnt  = len(np.unique(left_operand_list)) + len(np.unique(right_operand_list))
+                   ### MCCabe's Calculcation:
+                   if((operand_cnt > 0) and (uni_operator_cnt > 0) and (uni_operand_cnt > 0)):
+                      meth_vocabulary  = uni_operator_cnt + uni_operator_cnt
+                      meth_len         = operand_cnt + operator_cnt
+                      meth_vol         = meth_len * math.log(meth_vocabulary, 2)
+                      meth_diff        = (uni_operator_cnt / 2) * (operand_cnt / uni_operand_cnt)
+                      meth_effo        = meth_vol * meth_diff
+                      ### DO APPEND : difficulty, effort, volcabulary
+                      difficulty.append(meth_diff)
+                      effort.append(meth_effo)
+                      vocabulary.append(meth_vocabulary)
+                      leng.append(meth_len)
+
+               if(len(difficulty)> 0):
+                  avg_diff, med_diff = np.mean(difficulty), np.median(difficulty)
+               if(len(effort)> 0):
+                  avg_eff, med_eff   = np.mean(effort), np.median(effort)
+               if(len(vocabulary) > 0 ):
+                  avg_voc, med_voc   = np.mean(vocabulary), np.median(vocabulary)
+               if(len(leng) > 0 ):
+                  avg_len, med_len   = np.mean(leng), np.median(leng)
+
+               contentStr = str(meth_cnt) + ',' + str(dele_cnt) + ',' + str(prop_cnt) + ',' + str(fiel_cnt) + ',' + str(even_cnt) + ',' + str(avg_diff) + ',' + str(med_diff) + ',' + str(avg_eff) + ',' + str(med_eff) + ',' + str(avg_voc) + ',' + str(med_voc) + ',' + str(avg_len) + ',' + str(med_len) + ','
+               str2Write = str2Write + str(sessID) + ',' + str(tstamp_) + ','  + contentStr + '\n'
+               contentStr = ''
+
     return str2Write
 
 def readJSONFileContent(json_path, key_to_see):
@@ -117,8 +190,11 @@ if __name__=='__main__':
    ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
-   key_to_look = 'hierarchy'
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
+   # key_to_look = 'hierarchy'
+
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
+   key_to_look = 'sst'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
