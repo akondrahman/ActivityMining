@@ -1,6 +1,7 @@
 '''
 msr data challenge 2018
 Akond Rahman
+Extract EDIT, BUILD, TEST META DATA
 '''
 import os
 from os.path import isfile, join
@@ -142,7 +143,7 @@ if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
-   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
+   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
    # following already completed
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_BUILD_CONTENT.csv'
