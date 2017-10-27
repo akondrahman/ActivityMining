@@ -1,0 +1,4 @@
+API: http://www.kave.cc/feedbag/event-generation#TOC-Test-Run-Event
+Mining challange: http://www.kave.cc/msr-mining-challenge
+Windows path in Python: https://stackoverflow.com/questions/2953834/windows-path-in-python 
+Mining Challange Site: https://2018.msrconf.org/track/msr-2018-Mining-Challenge
