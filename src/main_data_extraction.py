@@ -112,7 +112,7 @@ def get_all_data(dir_p, key2look_p, file_to_save):
     all_content = ''
     all_sub_dirs = [dir_ for dir_ in os.listdir(dir_p)]
     all_sub_dirs = [x_ for x_ in all_sub_dirs if '-' in x_]
-    headerStr=getHeaderStr(key_to_look)
+    headerStr=getHeaderStr(key2look_p)
     #print all_sub_dirs
     for sub_dir in all_sub_dirs:
         fullPathToDir = dir_p + sub_dir

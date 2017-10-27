@@ -18,7 +18,7 @@ def giveTimeStamp():
   return strToret
 
 def getHeaderStr(key_param):
-    headerDict = {'build':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,BUILD_RES,BUILD_DURA',
+    headerDict = {'hierarchy':'SESS_ID,TIME,PRO_HIE,DEL_HIE,MET_HIE,FIELDS,NES_TYP,EVE_HIE',
                   'test':'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA'}
     return headerDict[key_param]
 
@@ -65,7 +65,7 @@ def readJSONFileContent(json_path, key_to_see):
              d_ = json.load(json_data)
              if ('$type' in d_):
                  val2see = d_['$type'].lower()
-                 if(key_to_see in val2see):
+                 if('edit' in val2see):
                     '''
                     get the data you need
                     '''
@@ -85,7 +85,7 @@ def get_all_data(dir_p, key2look_p, file_to_save):
     all_content = ''
     all_sub_dirs = [dir_ for dir_ in os.listdir(dir_p)]
     all_sub_dirs = [x_ for x_ in all_sub_dirs if '-' in x_]
-    headerStr=getHeaderStr(key_to_look)
+    headerStr=getHeaderStr(key2look_p)
     for sub_dir in all_sub_dirs:
         fullPathToDir = dir_p + sub_dir
         onlyfiles = [f_ for f_ in os.listdir(fullPathToDir) if isfile(join(fullPathToDir, f_))]
@@ -114,7 +114,7 @@ def get_all_data(dir_p, key2look_p, file_to_save):
 if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
-   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
+   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
    file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
