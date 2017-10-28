@@ -21,7 +21,7 @@ def giveTimeStamp():
 
 def getHeaderStr(key_param):
     headerDict = {'hierarchy':'SESS_ID,TIME,PRO_HIE,DEL_HIE,MET_HIE,FIELDS,NES_TYP,EVE_HIE',
-                  'sst':'SESS_ID,TIME,MET_CNT,DEL_CNT,PRO_CNT,FIE_CNT,EVE_CNT,AVG_MET_DIF,MED_MET_DIF,AVG_MET_EFF,MED_MET_EFF,AVG_MET_VOC,MED_MET_VOC,AVG_MET_LEN,MED_MET_LEN'}
+                  'sst':'SESS_ID,TIME,MET_CNT,DEL_CNT,PRO_CNT,FIE_CNT,EVE_CNT,AVG_MET_DIF,MED_MET_DIF,AVG_MET_EFF,MED_MET_EFF,AVG_MET_VOC,MED_MET_VOC,AVG_MET_LEN,MED_MET_LEN,AVG_PAR_CNT,MED_PAR_CNT,UNI_MET_CNT'}
     return headerDict[key_param]
 
 def dumpContentIntoFile(strP, fileP):
@@ -51,6 +51,19 @@ def getHierarchyDataFromDict(dict_param):
 
 
     return str2Write
+
+def getMethInfo(meth_param):
+   name_holder, param_holder = [], []
+   meth_content_list=meth_param['Body']
+   for meth_content in meth_content_list:
+       if ('Expression' in meth_content):
+           express_dict = meth_content['Expression']
+           if(('MethodName' in express_dict) and ('Parameters' in express_dict)):
+              meth_name, meth_param_cnt =   express_dict['MethodName'], len(express_dict['Parameters'])
+              name_holder.append(meth_name)
+              param_holder.append(meth_param_cnt)
+   #print name_holder, param_holder
+   return name_holder, param_holder
 
 def getOperaInfo(meth_body):
    left_operand_list, right_operand_list, operator_list = [], [], []
@@ -89,17 +102,19 @@ def getSSTDataFromDict(dict_param):
                fiel_cnt = len(fiel_ls)
                even_cnt = len(even_ls)
                ### to get averga, median Halstead's metrics
-               difficulty, effort, vocabulary, leng =[], [], [], []
+               difficulty, effort, vocabulary, leng, meth_param_cnt =[], [], [], [], []
                ### initialization
-               avg_diff, med_diff, avg_eff, med_eff  = 0, 0, 0, 0
-               avg_voc, med_voc, avg_len, med_len    = 0, 0 , 0, 0
+               avg_diff, med_diff, avg_eff, med_eff       = 0, 0, 0, 0
+               avg_voc, med_voc, avg_len, med_len         = 0, 0 , 0, 0
+               avg_param_cnt, med_param_cnt, uni_meth_cnt = 0, 0, 0
                for meth_body_ in meth_ls:
+                   ###1 . stuff for healstead
                    left_operand_list, right_operand_list, operator_list  = getOperaInfo(meth_body_)
                    operand_cnt= len(left_operand_list) + len(right_operand_list)
                    operator_cnt = len(operator_list)
                    uni_operator_cnt = len(np.unique(operator_list))
                    uni_operand_cnt  = len(np.unique(left_operand_list)) + len(np.unique(right_operand_list))
-                   ### MCCabe's Calculcation:
+                   ### MCCabe's Calculcation: reff: https://en.wikipedia.org/wiki/Halstead_complexity_measures
                    if((operand_cnt > 0) and (uni_operator_cnt > 0) and (uni_operand_cnt > 0)):
                       meth_vocabulary  = uni_operator_cnt + uni_operator_cnt
                       meth_len         = operand_cnt + operator_cnt
@@ -111,7 +126,10 @@ def getSSTDataFromDict(dict_param):
                       effort.append(meth_effo)
                       vocabulary.append(meth_vocabulary)
                       leng.append(meth_len)
-
+                   ###2. stuff for methods
+                   meth_names, meth_param_cnt = getMethInfo(meth_body_)
+                   uni_meth_names = np.unique(meth_names)
+                   uni_meth_cnt   = len(uni_meth_names)
                if(len(difficulty)> 0):
                   avg_diff, med_diff = np.mean(difficulty), np.median(difficulty)
                if(len(effort)> 0):
@@ -120,8 +138,10 @@ def getSSTDataFromDict(dict_param):
                   avg_voc, med_voc   = np.mean(vocabulary), np.median(vocabulary)
                if(len(leng) > 0 ):
                   avg_len, med_len   = np.mean(leng), np.median(leng)
+               if(len(meth_param_cnt)> 0):
+                  avg_param_cnt, med_param_cnt   = np.mean(meth_param_cnt), np.median(meth_param_cnt)
 
-               contentStr = str(meth_cnt) + ',' + str(dele_cnt) + ',' + str(prop_cnt) + ',' + str(fiel_cnt) + ',' + str(even_cnt) + ',' + str(avg_diff) + ',' + str(med_diff) + ',' + str(avg_eff) + ',' + str(med_eff) + ',' + str(avg_voc) + ',' + str(med_voc) + ',' + str(avg_len) + ',' + str(med_len) + ','
+               contentStr = str(meth_cnt) + ',' + str(dele_cnt) + ',' + str(prop_cnt) + ',' + str(fiel_cnt) + ',' + str(even_cnt) + ',' + str(avg_diff) + ',' + str(med_diff) + ',' + str(avg_eff) + ',' + str(med_eff) + ',' + str(avg_voc) + ',' + str(med_voc) + ',' + str(avg_len) + ',' + str(med_len) + ',' + str(avg_param_cnt) + ',' + str(med_param_cnt) + ',' + str(uni_meth_cnt) + ','
                str2Write = str2Write + str(sessID) + ',' + str(tstamp_) + ','  + contentStr + '\n'
                contentStr = ''
 
@@ -187,14 +207,14 @@ def get_all_data(dir_p, key2look_p, file_to_save):
 if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
-   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
-   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
+   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
+   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
-   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
-   # key_to_look = 'hierarchy'
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
+   key_to_look = 'hierarchy'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
-   key_to_look = 'sst'
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
+   # key_to_look = 'sst'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
