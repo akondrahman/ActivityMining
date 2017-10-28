@@ -208,13 +208,15 @@ if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
-   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
+   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
+   ## FOLOWWING IS DONE
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
    # key_to_look = 'hierarchy'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
-   key_to_look = 'sst'
+   ## FOLOWWING IS DONE
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
+   # key_to_look = 'sst'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()

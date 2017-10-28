@@ -21,7 +21,8 @@ def getHeaderStr(key_param):
                   'edit' :'SESS_ID,SESS_DOC,EVENT_DURA,TIME,CNG_SIZE,CNG_CNT',
                   'test' :'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA',
                   'error':'CONTEXT,STACKTRACE',
-                  'debug':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,MODE,REASON,ACTION'
+                  'debug':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,MODE,REASON,ACTION',
+                  'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,LOCA,TARGET'
                   }
     return headerDict[key_param]
 
@@ -94,6 +95,20 @@ def getDebugDataFromDict(dict_param):
 
     return str2Write
 
+def getNavigationDataFromDict(dict_param):
+    str2Write = ''
+    if( ('IDESessionUUID' in dict_param) and ('TypeOfNavigation' in dict_param) and ('TriggeredAt' in dict_param) and ('Location' in dict_param) and ('ActiveDocument' in dict_param) and ('Target' in dict_param)):
+        sessID      = dict_param['IDESessionUUID']
+        docu        = dict_param['ActiveDocument']
+        tstamp_     = dict_param['TriggeredAt']
+        type_       = dict_param['TypeOfNavigation']
+        locat_      = dict_param['Location']
+        target_     = dict_param['Target']
+
+        str2Write = str2Write + str(sessID) + ',' + str(docu) + ',' + str(tstamp_) + ',' + str(type_) + ',' + str(locat_) + ',' + str(target_) + ',' + '\n'
+
+    return str2Write
+
 def readJSONFileContent(json_path, key_to_see='test'):
     str2Write = ''
     onlyfiles = [f_ for f_ in os.listdir(json_path) if isfile(join(json_path, f_))]
@@ -120,6 +135,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
                        strFromDict = getEditDataFromDict(d_)
                     elif key_to_see=='debug':
                        strFromDict = getDebugDataFromDict(d_)
+                    elif key_to_see=='navigation':
+                       strFromDict = getNavigationDataFromDict(d_)
                     else:
                        strFromDict = ''
                        print 'KEY IS WRONG ... CHECK!'
@@ -178,8 +195,12 @@ if __name__=='__main__':
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_CONTENT.csv'
    # key_to_look = 'edit'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_DEBUG_CONTENT.csv'
-   key_to_look = 'debug'
+   # following already compelted
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_DEBUG_CONTENT.csv'
+   # key_to_look = 'debug'
+
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_NAVIGATION_CONTENT.csv'
+   key_to_look = 'navigation'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
