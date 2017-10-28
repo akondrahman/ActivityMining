@@ -18,8 +18,11 @@ def giveTimeStamp():
 
 def getHeaderStr(key_param):
     headerDict = {'build':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,BUILD_RES,BUILD_DURA',
-                  'edit':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,CNG_SIZE,CNG_CNT',
-                  'test':'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA'}
+                  'edit' :'SESS_ID,SESS_DOC,EVENT_DURA,TIME,CNG_SIZE,CNG_CNT',
+                  'test' :'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA',
+                  'error':'CONTEXT,STACKTRACE',
+                  'debug':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,MODE,REASON,ACTION'
+                  }
     return headerDict[key_param]
 
 def dumpContentIntoFile(strP, fileP):
@@ -76,6 +79,21 @@ def getEditDataFromDict(dict_param):
     return str2Write
 
 
+def getDebugDataFromDict(dict_param):
+    str2Write = ''
+    if( ('IDESessionUUID' in dict_param) and ('Mode' in dict_param) and ('Duration' in dict_param) and ('TriggeredAt' in dict_param) and ('Reason' in dict_param) and ('ActiveDocument' in dict_param) and ('Action' in dict_param)):
+        sessID      = dict_param['IDESessionUUID']
+        docu        = dict_param['ActiveDocument']
+        dura_       = dict_param['Duration']
+        tstamp_     = dict_param['TriggeredAt']
+        mode        = dict_param['Mode']
+        reason_     = dict_param['Reason']
+        action_     = dict_param['Action']
+
+        str2Write = str2Write + str(sessID) + ',' + str(docu) + ',' + str(dura_) + ',' + str(tstamp_) + ',' + str(mode) + ',' + str(reason_) + ',' + str(action_) + ',' + '\n'
+
+    return str2Write
+
 def readJSONFileContent(json_path, key_to_see='test'):
     str2Write = ''
     onlyfiles = [f_ for f_ in os.listdir(json_path) if isfile(join(json_path, f_))]
@@ -100,6 +118,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
                        strFromDict = getBuildDataFromDict(d_)
                     elif key_to_see=='edit':
                        strFromDict = getEditDataFromDict(d_)
+                    elif key_to_see=='debug':
+                       strFromDict = getDebugDataFromDict(d_)
                     else:
                        strFromDict = ''
                        print 'KEY IS WRONG ... CHECK!'
@@ -143,7 +163,7 @@ if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
-   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
+   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
    # following already completed
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_BUILD_CONTENT.csv'
@@ -153,8 +173,13 @@ if __name__=='__main__':
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_TEST_CONTENT.csv'
    # key_to_look = 'test'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_CONTENT.csv'
-   key_to_look = 'edit'
+
+   # following already compelted
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_CONTENT.csv'
+   # key_to_look = 'edit'
+
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_DEBUG_CONTENT.csv'
+   key_to_look = 'debug'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()

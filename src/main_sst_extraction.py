@@ -210,11 +210,11 @@ if __name__=='__main__':
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
    ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
-   key_to_look = 'hierarchy'
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
+   # key_to_look = 'hierarchy'
 
-   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
-   # key_to_look = 'sst'
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
+   key_to_look = 'sst'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
