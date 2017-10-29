@@ -211,8 +211,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
              if ('$type' in d_):
                  val2see = d_['$type'].lower()
                  if(key_to_see in val2see):
-                    print d_
-                    print '*'*25
+                    # print d_
+                    # print '*'*25
                     '''
                     get the data you need
                     '''
@@ -276,7 +276,7 @@ def get_all_data(dir_p, key2look_p, file_to_save):
 if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
-   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
+   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
    # following already completed

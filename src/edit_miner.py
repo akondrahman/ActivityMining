@@ -23,7 +23,7 @@ def giveTimeStamp():
 if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
-   edit_ds_file   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/LOCKED_ALL_EDIT_CONTENT.csv'
+   edit_ds_file   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/TESTRUN2_ALL_NAVIGATION_CONTENT.csv'
    edit_df        = pd.read_csv(edit_ds_file)
    print edit_df.head()
 
