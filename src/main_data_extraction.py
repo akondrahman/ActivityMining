@@ -18,14 +18,15 @@ def giveTimeStamp():
 
 
 def getHeaderStr(key_param):
-    headerDict = {'build':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,BUILD_RES,BUILD_DURA',
-                  'edit' :'SESS_ID,SESS_DOC,EVENT_DURA,TIME,CNG_SIZE,CNG_CNT',
-                  'test' :'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA',
-                  'error':'CONTEXT,STACKTRACE',
-                  'debug':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,MODE,REASON,ACTION',
-                  'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,LOCA,TARGET',
-                  'profile':'PROFILE_ID,CODE_REV,EXP_CS,EXP_ALL,SMALL_TEAM,MED_TEAM,LARG_TEAM,SESS_ID,PERSONAL_PROJ,POSITION,SOLO_TEAM,SHARE_PROJ_SMA,SHARE_PROJ_MED,SHARE_PROJ_LAR',
-                  'control':'SESS_ID,DURA,SOLN,SESS_DOC,TIME,VCS_TYPE,VCS_TIME'
+    headerDict = {'build':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,BUILD_RES,BUILD_DURA,',
+                  'edit' :'SESS_ID,SESS_DOC,EVENT_DURA,TIME,CNG_SIZE,CNG_CNT,',
+                  'test' :'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA,',
+                  'error':'CONTEXT,STACKTRACE,',
+                  'debug':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,MODE,REASON,ACTION,',
+                  'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,LOCA,TARGET,',
+                  'profile':'PROFILE_ID,CODE_REV,EXP_CS,EXP_ALL,SMALL_TEAM,MED_TEAM,LARG_TEAM,SESS_ID,PERSONAL_PROJ,POSITION,SOLO_TEAM,SHARE_PROJ_SMA,SHARE_PROJ_MED,SHARE_PROJ_LAR,',
+                  'control':'SESS_ID,DURA,SOLN,SESS_DOC,TIME,VCS_TYPE,VCS_TIME,',
+                  'solution':'SESS_ID,SESS_SOLN,SESS_DURA,SESS_DOC,SESS_ACT,SOLN_TIME,'
                   }
     return headerDict[key_param]
 
@@ -151,7 +152,6 @@ def getUserProfileDataFromDict(dict_param):
 
     return str2Write
 
-
 def getVersionControlDataFromDict(dict_param):
     str2Write = ''
     if( ('IDESessionUUID' in dict_param) and ('Solution' in dict_param) and ('Actions' in dict_param) and ('ActiveDocument' in dict_param) and ('TriggeredAt' in dict_param) and ('Duration' in dict_param)):
@@ -166,6 +166,20 @@ def getVersionControlDataFromDict(dict_param):
                 vcs_action_type = action_dict['ActionType']
                 vcs_action_ts   = action_dict['ExecutedAt']
                 str2Write = str2Write + str(sessID) + ',' + str(dura) + ',' + str(soln) + ',' + str(docu) + ',' + str(tstamp) + ',' + str(vcs_action_type) + ',' + str(vcs_action_ts) + ',' + '\n'
+    return str2Write
+
+
+def getSolutionDataFromDict(dict_param):
+    str2Write = ''
+    if( ('IDESessionUUID' in dict_param) and ('Target' in dict_param) and ('Duration' in dict_param) and ('ActiveDocument' in dict_param) and ('Action' in dict_param) and ('TriggeredAt' in dict_param)):
+        sessID  = dict_param['IDESessionUUID']
+        soln    = dict_param['Target']
+        dura    = dict_param['Duration']
+        docu    = dict_param['ActiveDocument']
+        action  = dict_param['Action']
+        tstamp  = dict_param['TriggeredAt']
+
+        str2Write = str2Write + str(sessID) + ',' + str(soln) + ',' + str(dura) + ',' + str(docu) + ',' + str(action) + ',' + str(tstamp) + ',' + '\n'
     return str2Write
 
 def readJSONFileContent(json_path, key_to_see='test'):
@@ -200,6 +214,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
                        strFromDict = getUserProfileDataFromDict(d_)
                     elif key_to_see=='control':
                        strFromDict = getVersionControlDataFromDict(d_)
+                    elif key_to_see=='solution':
+                       strFromDict = getSolutionDataFromDict(d_)
                     else:
                        strFromDict = ''
                        print 'KEY IS WRONG ... CHECK!'
@@ -270,8 +286,12 @@ if __name__=='__main__':
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_PROFILE_CONTENT.csv'
    # key_to_look = 'profile'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_VCS_CONTENT.csv'
-   key_to_look = 'control'
+   # following already compelted
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_VCS_CONTENT.csv'
+   # key_to_look = 'control'
+
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_SOLUTION_CONTENT.csv'
+   key_to_look = 'solution'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
