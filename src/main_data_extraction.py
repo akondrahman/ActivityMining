@@ -23,16 +23,18 @@ def getHeaderStr(key_param):
                   'test' :'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA,',
                   'error':'CONTEXT,STACKTRACE,',
                   'debug':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,MODE,REASON,ACTION,',
-                  'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,LOCA,TARGET,',
+                   #'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,LOCA,TARGET,',
+                  'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,',
                   'profile':'PROFILE_ID,CODE_REV,EXP_CS,EXP_ALL,SMALL_TEAM,MED_TEAM,LARG_TEAM,SESS_ID,PERSONAL_PROJ,POSITION,SOLO_TEAM,SHARE_PROJ_SMA,SHARE_PROJ_MED,SHARE_PROJ_LAR,',
                   'control':'SESS_ID,DURA,SOLN,SESS_DOC,TIME,VCS_TYPE,VCS_TIME,',
-                  'solution':'SESS_ID,SESS_SOLN,SESS_DURA,SESS_DOC,SESS_ACT,SOLN_TIME,'
+                  'solution':'SESS_ID,SESS_SOLN,SESS_DURA,SESS_DOC,SESS_ACT,SOLN_TIME,',
+                  'info':'SESS_ID,SESS_SOLN,SESS_DURA,SESS_DOC,SESS_ACT,SOLN_TIME,'
                   }
     return headerDict[key_param]
 
 def dumpContentIntoFile(strP, fileP):
   fileToWrite = open( fileP, 'w')
-  fileToWrite.write(strP )
+  fileToWrite.write(strP)
   fileToWrite.close()
   return str(os.stat(fileP).st_size)
 
@@ -109,8 +111,8 @@ def getNavigationDataFromDict(dict_param):
         locat_      = dict_param['Location']
         target_     = dict_param['Target']
 
-        str2Write = str2Write + str(sessID) + ',' + str(docu) + ',' + str(tstamp_) + ',' + str(type_) + ',' + str(locat_) + ',' + str(target_) + ',' + '\n'
-
+        # str2Write = str2Write + str(sessID) + ',' + str(docu) + ',' + str(tstamp_) + ',' + str(type_) + ',' + str(locat_) + ',' + str(target_) + ',' + '\n'
+        str2Write = str2Write + str(sessID) + ',' + str(docu) + ',' + str(tstamp_) + ',' + str(type_) + ',' + '\n'
     return str2Write
 
 def getUserProfileDataFromDict(dict_param):
@@ -182,6 +184,20 @@ def getSolutionDataFromDict(dict_param):
         str2Write = str2Write + str(sessID) + ',' + str(soln) + ',' + str(dura) + ',' + str(docu) + ',' + str(action) + ',' + str(tstamp) + ',' + '\n'
     return str2Write
 
+def getInfoDataFromDict(dict_param):
+    str2Write = ''
+    if( ('IDESessionUUID' in dict_param) and ('Target' in dict_param) and ('Duration' in dict_param) and ('ActiveDocument' in dict_param) and ('Action' in dict_param) and ('TriggeredAt' in dict_param)):
+        sessID  = dict_param['IDESessionUUID']
+        soln    = dict_param['Target']
+        dura    = dict_param['Duration']
+        docu    = dict_param['ActiveDocument']
+        action  = dict_param['Action']
+        tstamp  = dict_param['TriggeredAt']
+
+        str2Write = str2Write + str(sessID) + ',' + str(soln) + ',' + str(dura) + ',' + str(docu) + ',' + str(action) + ',' + str(tstamp) + ',' + '\n'
+    return str2Write
+
+
 def readJSONFileContent(json_path, key_to_see='test'):
     str2Write = ''
     onlyfiles = [f_ for f_ in os.listdir(json_path) if isfile(join(json_path, f_))]
@@ -195,8 +211,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
              if ('$type' in d_):
                  val2see = d_['$type'].lower()
                  if(key_to_see in val2see):
-                    # print d_
-                    # print '*'*25
+                    print d_
+                    print '*'*25
                     '''
                     get the data you need
                     '''
@@ -216,6 +232,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
                        strFromDict = getVersionControlDataFromDict(d_)
                     elif key_to_see=='solution':
                        strFromDict = getSolutionDataFromDict(d_)
+                    # elif key_to_see=='info':
+                    #    strFromDict = getInfoDataFromDict(d_)
                     else:
                        strFromDict = ''
                        print 'KEY IS WRONG ... CHECK!'
@@ -258,8 +276,8 @@ def get_all_data(dir_p, key2look_p, file_to_save):
 if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
-   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
-   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
+   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
+   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
    # following already completed
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_BUILD_CONTENT.csv'
@@ -290,8 +308,10 @@ if __name__=='__main__':
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_VCS_CONTENT.csv'
    # key_to_look = 'control'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_SOLUTION_CONTENT.csv'
-   key_to_look = 'solution'
+   # following already compelted
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_SOLUTION_CONTENT.csv'
+   # key_to_look = 'solution'
+
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
