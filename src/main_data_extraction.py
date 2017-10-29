@@ -16,13 +16,15 @@ def giveTimeStamp():
   strToret = datetime.datetime.fromtimestamp(tsObj).strftime('%Y-%m-%d %H:%M:%S')
   return strToret
 
+
 def getHeaderStr(key_param):
     headerDict = {'build':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,BUILD_RES,BUILD_DURA',
                   'edit' :'SESS_ID,SESS_DOC,EVENT_DURA,TIME,CNG_SIZE,CNG_CNT',
                   'test' :'SESS_ID,ABORT,SESS_DOC,EVENT_DURA,TIME,TEST_RES,TEST_DURA',
                   'error':'CONTEXT,STACKTRACE',
                   'debug':'SESS_ID,SESS_DOC,EVENT_DURA,TIME,MODE,REASON,ACTION',
-                  'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,LOCA,TARGET'
+                  'navigation':'SESS_ID,SESS_DOC,TIME,TYPE,LOCA,TARGET',
+                  'profile':'PROFILE_ID,CODE_REV,EXP_CS,EXP_ALL,SMALL_TEAM,MED_TEAM,LARG_TEAM,SESS_ID,PERSONAL_PROJ,POSITION,SOLO_TEAM,SHARE_PROJ_SMA,SHARE_PROJ_MED,SHARE_PROJ_LAR'
                   }
     return headerDict[key_param]
 
@@ -109,6 +111,45 @@ def getNavigationDataFromDict(dict_param):
 
     return str2Write
 
+def getUserProfileDataFromDict(dict_param):
+    str2Write = ''
+    if( ('CodeReviews' in dict_param) and ('ProgrammingCSharp' in dict_param) and ('TeamsMedium' in dict_param)    and
+        ('IDESessionUUID' in dict_param) and ('ProgrammingGeneral' in dict_param) and ('TeamsLarge' in dict_param) and
+        ('TeamsSmall' in dict_param) and ('ProjectsPersonal' in dict_param) and ('ProfileId' in dict_param) and
+        ('Position' in dict_param) and ('TeamsSolo' in dict_param) and
+        ('ProjectsSharedSmall' in dict_param) and ('ProjectsSharedMedium' in dict_param) and ('ProjectsSharedLarge' in dict_param)):
+
+        profileID    = dict_param['ProfileId']
+        code_rev     = dict_param['CodeReviews']
+
+        exp_csha     = dict_param['ProgrammingCSharp']
+        exp_gene     = dict_param['ProgrammingGeneral']
+
+        team_siz_sma = dict_param['TeamsSmall']
+        team_siz_med = dict_param['TeamsMedium']
+        team_siz_lar = dict_param['TeamsLarge']
+
+        sessID       = dict_param['IDESessionUUID']
+        pers_proj    = dict_param['ProjectsPersonal']
+        position     = dict_param['Position']
+        team_solo    = dict_param['TeamsSolo']
+
+        proj_share_s = dict_param['ProjectsSharedSmall']
+        proj_share_m = dict_param['ProjectsSharedMedium']
+        proj_share_l = dict_param['ProjectsSharedLarge']
+
+        vals = [profileID, code_rev, exp_csha, exp_gene, team_siz_sma, team_siz_med, team_siz_lar,
+                sessID, pers_proj, position, team_solo, proj_share_s, proj_share_m, proj_share_l
+               ]
+        content_str=''
+        for val_ in vals:
+            content_str = content_str + str(val_) + ','
+
+        str2Write = str2Write + content_str + '\n'
+
+
+    return str2Write
+
 def readJSONFileContent(json_path, key_to_see='test'):
     str2Write = ''
     onlyfiles = [f_ for f_ in os.listdir(json_path) if isfile(join(json_path, f_))]
@@ -137,6 +178,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
                        strFromDict = getDebugDataFromDict(d_)
                     elif key_to_see=='navigation':
                        strFromDict = getNavigationDataFromDict(d_)
+                    elif key_to_see=='profile':
+                       strFromDict = getUserProfileDataFromDict(d_)
                     else:
                        strFromDict = ''
                        print 'KEY IS WRONG ... CHECK!'
@@ -199,8 +242,12 @@ if __name__=='__main__':
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_DEBUG_CONTENT.csv'
    # key_to_look = 'debug'
 
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_NAVIGATION_CONTENT.csv'
-   key_to_look = 'navigation'
+   # following already compelted
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_NAVIGATION_CONTENT.csv'
+   # key_to_look = 'navigation'
+
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_PROFILE_CONTENT.csv'
+   key_to_look = 'profile'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
