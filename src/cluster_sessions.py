@@ -10,17 +10,14 @@ import numpy as np
 from sklearn.metrics import silhouette_score
 from sklearn import cluster
 import utils
-
+import datetime,  time
 
 def makeTimeHuman(single_val):
-    #2016-05-07T00:22:34.7609533+02:00
+    #2016-05-07T00:22:34.7609533+02:00 , timestamp string
     dt_  = single_val.split('T')[1]
-    ts_  = dt_.split('+')[0]
-    hh_  = float(ts_.split(':')[0])
-    mm_  = float(ts_.split(':')[1])
-    ss_  = float(ts_.split(':')[2])
-
-    second2ret = hh_*3600 + mm_*60 + ss_
+    #ts_  = dt_.split('+')[0]
+    x = time.strptime(dt_.split('+')[0],'%H:%M:%S')
+    second2ret = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
     return second2ret
 
 def getUnderstandabilityOfAllSessions(datafile_path):
@@ -108,19 +105,22 @@ def getEditIntervalForClusters(sess_dict):
         matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
         matched_edit_df = matched_edit_df.sort_values(['TIME'])
         matched_edit_df['FORMATTED_TS'] = matched_edit_df['TIME'].apply(makeTimeHuman)
-        # print matched_edit_df.head()
+        print matched_edit_df.head()
         edit_cnt = len(matched_edit_df.index)
         formatted_time_list = matched_edit_df['FORMATTED_TS'].tolist()
+        #formatted_time_list =
         edit_interval_list  = np.ediff1d(formatted_time_list)
         if ((edit_cnt > 0) and (len(edit_interval_list) > 0)):
             #print edit_interval_list
             med_edit_inte = round(np.median(edit_interval_list), 5)
             edit_interval = float(med_edit_inte)/float(edit_cnt) #  median edit interval, normalized by counts
+            edit_interval = round(edit_interval, 5)
             if sess_label==1:
                high_grp.append(edit_interval)
             else:
                low_grp.append(edit_interval)
-    print low_grp
+    neg_vals = [x for x in low_grp if x < 0]
+    #print neg_vals
     return high_grp, low_grp
 
 if __name__=='__main__':
