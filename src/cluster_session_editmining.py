@@ -116,12 +116,12 @@ def getEditIntervalForClusters(sess_dict):
         matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
         matched_edit_df = matched_edit_df.sort_values(['TIME'])
         matched_edit_df['FORMATTED_TS'] = matched_edit_df['TIME'].apply(makeTimeHuman)
-        #print matched_edit_df.head()
+
         edit_cnt = len(matched_edit_df.index)
         formatted_time_list = matched_edit_df['FORMATTED_TS'].tolist()
-        #formatted_time_list =
+
         edit_interval_list  = np.ediff1d(formatted_time_list)
-        #print edit_interval_list
+
         if ((edit_cnt > 0) and (len(edit_interval_list) > 0)):
             med_edit_inte = round(np.median(edit_interval_list), 5)
             # med_edit_inte = round(np.mean(edit_interval_list), 5)
@@ -133,8 +133,7 @@ def getEditIntervalForClusters(sess_dict):
                high_grp.append(edit_interval)
             else:
                low_grp.append(edit_interval)
-    neg_vals = [x for x in low_grp if x < 0]
-    #print neg_vals
+
     return high_grp, low_grp
 
 def getEditSizeForClusters(sess_dict):
