@@ -16,9 +16,9 @@ def makeTimeHuman(single_val):
     #2016-05-07T00:22:34.7609533+02:00
     dt_  = single_val.split('T')[1]
     ts_  = dt_.split('+')[0]
-    hh_  = int(ts_.split(':')[0])
-    mm_  = int(ts_.split(':')[1])
-    ss_  = int(ts_.split(':')[2])
+    hh_  = float(ts_.split(':')[0])
+    mm_  = float(ts_.split(':')[1])
+    ss_  = float(ts_.split(':')[2])
 
     second2ret = hh_*3600 + mm_*60 + ss_
     return second2ret
@@ -106,7 +106,7 @@ def getEditIntervalForClusters(sess_dict):
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_dict.iteritems():
         matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
-        matched_edit_df = matched_edit_df.sort(['TIME'])
+        matched_edit_df = matched_edit_df.sort_values(['TIME'])
         matched_edit_df['FORMATTED_TS'] = matched_edit_df['TIME'].apply(makeTimeHuman)
         print matched_edit_df.head()
         edit_cnt = len(matched_edit_df.index)
