@@ -50,3 +50,22 @@ def getTestCountForClusters(sess_with_labels):
            low_grp.append(valid_test_event_cnt)
            l_aborted.append(invalid_test_event_cnt)
     return high_grp, low_grp, h_aborted, l_aborted
+
+
+if __name__=='__main__':
+    print "Started at:", utils.giveTimeStamp()
+    print '='*100
+    high_count = 0
+    final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
+    for index_key, cluster_label in final_sess_with_labels.iteritems():
+        if cluster_label==1:
+            high_count += 1
+    print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+    print '='*50
+    h_grp_build_cnt, l_grp_build_cnt = getBuildCountForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_build_cnt, 'H_BUILD_COUNT.csv')
+    dumpValuesToFile(l_grp_build_cnt, 'L_BUILD_COUNT.csv')
+    print 'Build count data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_build_cnt, l_grp_build_cnt, 'BUILD_COUNT')
+    print '='*50
