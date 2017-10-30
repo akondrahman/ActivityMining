@@ -11,6 +11,18 @@ from sklearn.metrics import silhouette_score
 from sklearn import cluster
 import utils
 
+
+def makeTimeHuman(single_val):
+    #2016-05-07T00:22:34.7609533+02:00
+    dt_  = single_val.split('T')[1]
+    ts_  = dt_.split('+')[0]
+    hh_  = int(ts_.split(':')[0])
+    mm_  = int(ts_.split(':')[1])
+    ss_  = int(ts_.split(':')[2])
+
+    second2ret = hh_*3600 + mm_*60 + ss_
+    return second2ret
+
 def getUnderstandabilityOfAllSessions(datafile_path):
    complexity_df   = pd.read_csv(datafile_path)
    complexity_df   = complexity_df.drop('TIME', 1)
@@ -87,6 +99,27 @@ def getEditCountForClusters(sess_dict):
         else:
            low_grp.append(edit_cnt)
     return high_grp, low_grp
+
+def getEditIntervalForClusters(sess_dict):
+    edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
+    edit_df   = pd.read_csv(edit_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_dict.iteritems():
+        matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
+        matched_edit_df = matched_edit_df.sort(['TIME'])
+        matched_edit_df['FORMATTED_TS'] = matched_edit_df['TIME'].apply(makeTimeHuman)
+        print matched_edit_df.head()
+        edit_cnt = len(matched_edit_df.index)
+        formatted_time_list = matched_edit_df['FORMATTED_TS'].tolist()
+        edit_interval_list  = np.ediff1d(formatted_time_list)
+        med_edit_inte = np.median(edit_interval_list)
+        edit_interval = float(med_edit_inte)/float(edit_cnt) #  median edit interval, normalized by counts
+        if sess_label==1:
+           high_grp.append(edit_interval)
+        else:
+           low_grp.append(edit_interval)
+    return high_grp, low_grp
+
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
@@ -94,7 +127,7 @@ if __name__=='__main__':
     df = getUnderstandabilityOfAllSessions(file_path)
     df2Cluster = df.drop(df.columns[0], 1)
     #print df2Cluster
-    determineBestCluster(df2Cluster)
+    #determineBestCluster(df2Cluster)
     valsWithLabels = clusterValues(df2Cluster, 2) ## two cluter mechnsim as seen by Silhouette wirdth
     high_count = 0
     #print valsWithLabels
@@ -108,10 +141,15 @@ if __name__=='__main__':
     print '='*50
     print 'Labeling completed for {} sessions'.format(len(final_sess_with_labels))
     print '='*50
-    h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels)
-    print 'Edit count data extracted ...'
+    # h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels)
+    # print 'Edit count data extracted ...'
+    # print '='*50
+    # utils.compareTwoGroups(h_grp_edit_cnt, l_grp_edit_cnt, 'EDIT_COUNT')
+    # print '='*50
+    h_grp_edit_inte, l_grp_edit_inte = getEditIntervalForClusters(final_sess_with_labels)
+    print 'Normalized median edit interval (seconds) data extracted ...'
     print '='*50
-    utils.compareTwoGroups(h_grp_edit_cnt, l_grp_edit_cnt, 'EDIT_COUNT')
+    utils.compareTwoGroups(h_grp_edit_inte, l_grp_edit_inte, 'NORM_EDIT_INTERVAL')
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
     print '='*100
