@@ -9,7 +9,7 @@ import pandas as pd
 import utils
 import datetime,  time
 import cPickle as pickle
-import numpy as np 
+import numpy as np
 
 def makeTimeHuman(single_val):
     #2016-05-17T01:28:02.8130763+02:00 , timestamp string
@@ -43,7 +43,7 @@ def getBuildCountForClusters(sess_with_labels_dict):
            low_grp.append(build_event_cnt)
     return high_grp, low_grp
 
-def getEditIntervalForClusters(sess_with_labels_dict):
+def getBuildIntervalForClusters(sess_with_labels_dict):
     build_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_BUILD_CONTENT.csv'
     build_df   = pd.read_csv(build_ds_path)
     high_grp, low_grp = [], []
@@ -70,6 +70,10 @@ def getEditIntervalForClusters(sess_with_labels_dict):
 
     return high_grp, low_grp
 
+
+def getBuildPassRatioForClusters(sess_dict_p):
+    
+
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
@@ -88,10 +92,17 @@ if __name__=='__main__':
     # utils.compareTwoGroups(h_grp_build_cnt, l_grp_build_cnt, 'BUILD_COUNT')
     # print '='*50
     print '='*50
-    h_grp_build_int, l_grp_build_int = getEditIntervalForClusters(final_sess_with_labels)
-    dumpValuesToFile(h_grp_build_int, 'H_BUILD_INTERVAL.csv')
-    dumpValuesToFile(l_grp_build_int, 'L_BUILD_INTERVAL.csv')
-    print 'Build interval (seconds) data extracted ...'
+    # h_grp_build_int, l_grp_build_int = getBuildIntervalForClusters(final_sess_with_labels)
+    # dumpValuesToFile(h_grp_build_int, 'H_BUILD_INTERVAL.csv')
+    # dumpValuesToFile(l_grp_build_int, 'L_BUILD_INTERVAL.csv')
+    # print 'Build interval (seconds) data extracted ...'
+    # print '='*50
+    # utils.compareTwoGroups(h_grp_build_int, l_grp_build_int, 'NORM_BUILD_INTERVAL')
+    # print '='*50
+    h_grp_build_pass, l_grp_build_pass = getBuildPassRatioForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_build_pass, 'H_BUILD_PASS_RATIO.csv')
+    dumpValuesToFile(l_grp_build_pass, 'L_BUILD_PASS_RATIO.csv')
+    print 'Build pass ratio data extracted ...'
     print '='*50
-    utils.compareTwoGroups(h_grp_build_int, l_grp_build_int, 'NORM_BUILD_INTERVAL')
+    utils.compareTwoGroups(h_grp_build_pass, l_grp_build_pass, 'NORM_BUILD_PASS_RATIO')
     print '='*50
