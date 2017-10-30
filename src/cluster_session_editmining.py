@@ -92,6 +92,7 @@ def dumpValuesToFile(list_param, file2save):
     feature_name = file2save.split('.')[0]
     str2write = feature_name + ',' + '\n' + str2write
     os_bytes = utils.dumpContentIntoFile(str2write, file2save)
+    print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
     return os_bytes
 
 def getEditCountForClusters(sess_dict):
@@ -123,6 +124,7 @@ def getEditIntervalForClusters(sess_dict):
         #print edit_interval_list
         if ((edit_cnt > 0) and (len(edit_interval_list) > 0)):
             med_edit_inte = round(np.median(edit_interval_list), 5)
+            # med_edit_inte = round(np.mean(edit_interval_list), 5)
             if (med_edit_inte < 0):
                 med_edit_inte = 0.0
             edit_interval = float(med_edit_inte)/float(edit_cnt) #  median edit interval, normalized by counts
@@ -143,6 +145,7 @@ def getEditSizeForClusters(sess_dict):
         matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
         edit_event_cnt = len(matched_edit_df.index)
         medi_edit_size = np.median(matched_edit_df['CNG_SIZE'].tolist())
+        # medi_edit_size = np.mean(matched_edit_df['CNG_SIZE'].tolist())
         norm_edit_size = round(float(medi_edit_size)/float(edit_event_cnt), 5)
         if sess_label==1:
            high_grp.append(norm_edit_size)
@@ -159,6 +162,7 @@ def getEditLOCACHNGForClusters(sess_dict):
         matched_edit_df   = edit_df[edit_df['SESS_ID']==sess_id]
         edit_event_cnt    = len(matched_edit_df.index)
         medi_edit_loc_cng = np.median(matched_edit_df['CNG_CNT'].tolist())
+        # medi_edit_loc_cng = np.mean(matched_edit_df['CNG_CNT'].tolist())
         norm_edit_loc_cng = round(float(medi_edit_loc_cng)/float(edit_event_cnt), 5)
         if sess_label==1:
            high_grp.append(norm_edit_loc_cng)
