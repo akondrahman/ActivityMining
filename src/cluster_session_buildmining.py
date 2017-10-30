@@ -72,7 +72,26 @@ def getBuildIntervalForClusters(sess_with_labels_dict):
 
 
 def getBuildPassRatioForClusters(sess_dict_p):
-    
+    build_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_BUILD_CONTENT.csv'
+    build_df   = pd.read_csv(build_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_with_labels_dict.iteritems():
+        matched_build_df = build_df[build_df['SESS_ID']==sess_id]
+        build_event_cnt = len(matched_build_df.index)
+        build_res_as_list  = matched_build_df['BUILD_RES'].tolist()
+        print build_res_as_list
+        pass_cnt, fail_cnt = 0, 0
+        for build_res in build_res_as_list:
+            if (build_res=='TRUE'):
+                pass_cnt += 1
+            else:
+                fail_cnt += 1
+        pass_ratio = round(float(pass_cnt)/float(pass_cnt + fail_cnt), 5)
+        if sess_label==1:
+           high_grp.append(pass_ratio)
+        else:
+           low_grp.append(pass_ratio)
+    return high_grp, low_grp
 
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
