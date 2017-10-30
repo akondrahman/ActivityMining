@@ -140,6 +140,22 @@ def getEditSizeForClusters(sess_dict):
            low_grp.append(norm_edit_size)
     return high_grp, low_grp
 
+
+def getEditLOCACHNGForClusters(sess_dict):
+    edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
+    edit_df   = pd.read_csv(edit_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_dict.iteritems():
+        matched_edit_df   = edit_df[edit_df['SESS_ID']==sess_id]
+        edit_event_cnt    = len(matched_edit_df.index)
+        medi_edit_loc_cng = np.median(matched_edit_df['CNG_CNT'].tolist())
+        norm_edit_loc_cng = round(float(medi_edit_loc_cng)/float(edit_event_cnt), 5)
+        if sess_label==1:
+           high_grp.append(norm_edit_loc_cng)
+        else:
+           low_grp.append(norm_edit_loc_cng)
+    return high_grp, low_grp
+
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
@@ -171,10 +187,14 @@ if __name__=='__main__':
     # print '='*50
     # utils.compareTwoGroups(h_grp_edit_inte, l_grp_edit_inte, 'NORM_EDIT_INTERVAL')
     # print '='*50
-    h_grp_edit_size, l_grp_edit_size = getEditSizeForClusters(final_sess_with_labels)
-    print 'Normalized median edit size extracted ...'
+    # h_grp_edit_size, l_grp_edit_size = getEditSizeForClusters(final_sess_with_labels)
+    # print 'Normalized median edit size extracted ...'
+    # print '='*50
+    # utils.compareTwoGroups(h_grp_edit_size, l_grp_edit_size, 'NORM_EDIT_SIZE')
+    h_grp_edit_loc_chng, l_grp_edit_loc_chng = getEditLOCACHNGForClusters(final_sess_with_labels)
+    print 'Normalized median edit location-changes extracted ...'
     print '='*50
-    utils.compareTwoGroups(h_grp_edit_size, l_grp_edit_size, 'NORM_EDIT_SIZE')
+    utils.compareTwoGroups(h_grp_edit_loc_chng, l_grp_edit_loc_chng, 'NORM_EDIT_LOC_CHNG')
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
     print '='*100
