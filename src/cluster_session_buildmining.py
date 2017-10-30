@@ -7,7 +7,7 @@ Build data mining for clustered sessions
 import os
 import cPickle as pickle
 import pandas as pd
-
+import utils 
 
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
