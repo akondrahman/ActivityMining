@@ -6,7 +6,8 @@ Monday
 '''
 import cliffsDelta
 import numpy as np
-from scipy import stats 
+from scipy import stats
+import matplotlib.pyplot as plt
 
 def makeBoxPlots(h_list, l_list, feature_param):
     data_to_plot = [h_list, l_list,]
@@ -24,9 +25,12 @@ def compareTwoGroups(h_list, l_list, feature_name):
    print '-'*25
    print 'Non Filtered ({}): (count:{}, median:{}, mean:{})'.format(feature_name, len(l_list), np.median(l_list), np.mean(l_list))
    print '-'*25
-   TS, p = stats.mannwhitneyu(h_list, l_list, alternative='greater')
+   greater_TS, greater_p = stats.mannwhitneyu(h_list, l_list, alternative='greater')
    cliffs_delta = cliffsDelta.cliffsDelta(h_list, l_list)
-   print 'TS:{}, pee value:{}, cliffs:{}'.format(TS, p, cliffs_delta)
+   print '[GREATER?] TS:{}, pee value:{}, cliffs:{}'.format(greater_TS, greater_p , cliffs_delta)
+   print '-'*25
+   lesser_TS, lesser_p = stats.mannwhitneyu(h_list, l_list, alternative='less')
+   print '[LESSER?] TS:{}, pee value:{}, cliffs:{}'.format(lesser_TS, lesser_p, cliffs_delta)
    print '-'*25
    makeBoxPlots(h_list, l_list, feature_name)
 def giveTimeStamp():
