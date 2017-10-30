@@ -60,7 +60,7 @@ if __name__=='__main__':
     for index_key, cluster_label in final_sess_with_labels.iteritems():
         if cluster_label==1:
             high_count += 1
-    print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+    print 'Total Sessions With Method Usage:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
     print '='*50
     h_grp_t_cnt, l_grp_t_cnt, abort_h, abort_l = getTestCountForClusters(final_sess_with_labels)
     dumpValuesToFile(h_grp_t_cnt, 'H_TEST_COUNT.csv')
