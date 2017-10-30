@@ -9,6 +9,7 @@ import pandas as pd
 import utils
 import datetime,  time
 import cPickle as pickle
+import numpy as np 
 
 def makeTimeHuman(single_val):
     #2016-05-17T01:28:02.8130763+02:00 , timestamp string
@@ -78,11 +79,19 @@ if __name__=='__main__':
         if cluster_label==1:
             high_count += 1
     print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+    # print '='*50
+    # h_grp_build_cnt, l_grp_build_cnt = getBuildCountForClusters(final_sess_with_labels)
+    # dumpValuesToFile(h_grp_build_cnt, 'H_BUILD_COUNT.csv')
+    # dumpValuesToFile(l_grp_build_cnt, 'L_BUILD_COUNT.csv')
+    # print 'Build count data extracted ...'
+    # print '='*50
+    # utils.compareTwoGroups(h_grp_build_cnt, l_grp_build_cnt, 'BUILD_COUNT')
+    # print '='*50
     print '='*50
-    h_grp_build_cnt, l_grp_build_cnt = getBuildCountForClusters(final_sess_with_labels)
-    dumpValuesToFile(h_grp_build_cnt, 'H_BUILD_COUNT.csv')
-    dumpValuesToFile(l_grp_build_cnt, 'L_BUILD_COUNT.csv')
-    print 'Build count data extracted ...'
+    h_grp_build_int, l_grp_build_int = getEditIntervalForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_build_int, 'H_BUILD_INTERVAL.csv')
+    dumpValuesToFile(l_grp_build_int, 'L_BUILD_INTERVAL.csv')
+    print 'Build interval (seconds) data extracted ...'
     print '='*50
-    utils.compareTwoGroups(h_grp_build_cnt, l_grp_build_cnt, 'BUILD_COUNT')
+    utils.compareTwoGroups(h_grp_build_int, l_grp_build_int, 'NORM_BUILD_INTERVAL')
     print '='*50
