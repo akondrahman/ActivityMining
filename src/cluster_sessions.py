@@ -88,6 +88,8 @@ def getEditCountForClusters(sess_dict):
            low_grp.append(edit_cnt)
     return high_grp, low_grp
 if __name__=='__main__':
+    print "Started at:", utils.giveTimeStamp()
+    print '='*100
     file_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_SST_CONTENT.csv'
     df = getUnderstandabilityOfAllSessions(file_path)
     df2Cluster = df.drop(df.columns[0], 1)
@@ -104,7 +106,12 @@ if __name__=='__main__':
             high_count += 1
     print 'Total:{}, High:{}, Low:{}'.format(len(df.index), high_count, len(valsWithLabels) - high_count)
     print '='*50
-    print 'Labeling compelted for {} sessions'.format(len(final_sess_with_labels))
+    print 'Labeling completed for {} sessions'.format(len(final_sess_with_labels))
     print '='*50
     h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels)
+    print 'Edit count data extracted ...'
+    print '='*50
     utils.compareTwoGroups(h_grp_edit_cnt, l_grp_edit_cnt, 'EDIT_COUNT')
+    print '='*100
+    print "Ended at:", utils.giveTimeStamp()
+    print '='*100

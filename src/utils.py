@@ -5,6 +5,7 @@ Oct 30, 2017
 Monday
 '''
 import cliffsDelta
+import numpy as np 
 
 def makeBoxPlots(h_list, l_list, feature_param):
     data_to_plot = [h_list, l_list,]
@@ -27,3 +28,8 @@ def compareTwoGroups(h_list, l_list, feature_name):
    print 'TS:{}, pee value:{}, cliffs:{}'.format(TS, p, cliffs_delta)
    print '-'*25
    makeBoxPlots(h_list, l_list, feature_name)
+def giveTimeStamp():
+  import time, datetime
+  tsObj = time.time()
+  strToret = datetime.datetime.fromtimestamp(tsObj).strftime('%Y-%m-%d %H:%M:%S')
+  return strToret
