@@ -97,7 +97,7 @@ if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
     high_count = 0
-    final_sess_with_labels = pickle.load( open( '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
+    final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
     for index_key, cluster_label in final_sess_with_labels.iteritems():
         if cluster_label==1:
             high_count += 1
