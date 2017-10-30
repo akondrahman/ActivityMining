@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import silhouette_score
 from sklearn import cluster
+import utils
 
 def getUnderstandabilityOfAllSessions(datafile_path):
    complexity_df   = pd.read_csv(datafile_path)
@@ -74,6 +75,18 @@ def clusterValues(df_param, no_of_clusters):
     #print valsWithLabels
     return valsWithLabels
 
+def getEditCountForClusters(sess_dict):
+    edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
+    edit_df   = pd.read_csv(edit_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_dict.iteritems():
+        matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
+        edit_cnt = len(matched_edit_df.index)
+        if sess_label==1:
+           high_grp.append(edit_cnt)
+        else:
+           low_grp.append(edit_cnt)
+    return high_grp, low_grp
 if __name__=='__main__':
     file_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_SST_CONTENT.csv'
     df = getUnderstandabilityOfAllSessions(file_path)
@@ -93,3 +106,5 @@ if __name__=='__main__':
     print '='*50
     print 'Labeling compelted for {} sessions'.format(len(final_sess_with_labels))
     print '='*50
+    h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels)
+    utils.compareTwoGroups(h_grp_edit_cnt, l_grp_edit_cnt, 'EDIT_COUNT')
