@@ -85,6 +85,15 @@ def clusterValues(df_param, no_of_clusters):
     #print valsWithLabels
     return valsWithLabels
 
+def dumpValuesToFile(list_param, file2save):
+    str2write = ''
+    for elem in list_param:
+        str2write = str2write + str(elem) + ',' + '\n'
+    feature_name = file2save.split('.')[0]
+    str2write = feature_name + ',' + '\n' + str2write
+    os_bytes = utils.dumpContentIntoFile(str2write, file2save)
+    return os_bytes
+
 def getEditCountForClusters(sess_dict):
     edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
     edit_df   = pd.read_csv(edit_ds_path)
@@ -180,20 +189,28 @@ if __name__=='__main__':
     print 'Labeling completed for {} sessions'.format(len(final_sess_with_labels))
     print '='*50
     h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_edit_cnt, 'H_EDIT_COUNT.csv')
+    dumpValuesToFile(l_grp_edit_cnt, 'L_EDIT_COUNT.csv')
     print 'Edit count data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_cnt, l_grp_edit_cnt, 'EDIT_COUNT')
     print '='*50
     h_grp_edit_inte, l_grp_edit_inte = getEditIntervalForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_edit_inte, 'H_NORM_EDIT_INTERVAL.csv')
+    dumpValuesToFile(l_grp_edit_inte, 'L_NORM_EDIT_INTERVAL.csv')
     print 'Normalized median edit interval (seconds) data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_inte, l_grp_edit_inte, 'NORM_EDIT_INTERVAL')
     print '='*50
     h_grp_edit_size, l_grp_edit_size = getEditSizeForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_edit_size, 'H_NORM_EDIT_SIZE.csv')
+    dumpValuesToFile(l_grp_edit_size, 'L_NORM_EDIT_SIZE.csv')
     print 'Normalized median edit size extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_size, l_grp_edit_size, 'NORM_EDIT_SIZE')
     h_grp_edit_loc_chng, l_grp_edit_loc_chng = getEditLOCACHNGForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_edit_loc_chng, 'H_NORM_EDIT_LOC_CHNG.csv')
+    dumpValuesToFile(l_grp_edit_loc_chng, 'L_NORM_EDIT_LOC_CHNG.csv')
     print 'Normalized median edit location-changes extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_loc_chng, l_grp_edit_loc_chng, 'NORM_EDIT_LOC_CHNG')

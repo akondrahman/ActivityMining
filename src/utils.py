@@ -38,3 +38,12 @@ def giveTimeStamp():
   tsObj = time.time()
   strToret = datetime.datetime.fromtimestamp(tsObj).strftime('%Y-%m-%d %H:%M:%S')
   return strToret
+
+
+
+
+def dumpContentIntoFile(strP, fileP):
+  fileToWrite = open( fileP, 'w')
+  fileToWrite.write(strP)
+  fileToWrite.close()
+  return str(os.stat(fileP).st_size)
