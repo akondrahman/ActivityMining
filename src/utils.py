@@ -5,7 +5,8 @@ Oct 30, 2017
 Monday
 '''
 import cliffsDelta
-import numpy as np 
+import numpy as np
+from scipy import stats 
 
 def makeBoxPlots(h_list, l_list, feature_param):
     data_to_plot = [h_list, l_list,]
