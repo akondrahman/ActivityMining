@@ -28,7 +28,8 @@ def getHeaderStr(key_param):
                   'profile':'PROFILE_ID,CODE_REV,EXP_CS,EXP_ALL,SMALL_TEAM,MED_TEAM,LARG_TEAM,SESS_ID,PERSONAL_PROJ,POSITION,SOLO_TEAM,SHARE_PROJ_SMA,SHARE_PROJ_MED,SHARE_PROJ_LAR,',
                   'control':'SESS_ID,DURA,SOLN,SESS_DOC,TIME,VCS_TYPE,VCS_TIME,',
                   'solution':'SESS_ID,SESS_SOLN,SESS_DURA,SESS_DOC,SESS_ACT,SOLN_TIME,',
-                  'info':'SESS_ID,SESS_SOLN,SESS_DURA,SESS_DOC,SESS_ACT,SOLN_TIME,'
+                  'info':'SESS_ID,SESS_SOLN,SESS_DURA,SESS_DOC,SESS_ACT,SOLN_TIME,',
+                  'command':'SESS_ID,TIME,COMMAND'
                   }
     return headerDict[key_param]
 
@@ -197,6 +198,19 @@ def getInfoDataFromDict(dict_param):
         str2Write = str2Write + str(sessID) + ',' + str(soln) + ',' + str(dura) + ',' + str(docu) + ',' + str(action) + ',' + str(tstamp) + ',' + '\n'
     return str2Write
 
+def getCommandDataFromDict(dict_param):
+    str2Write = ''
+    if( ('IDESessionUUID' in dict_param) and ('TriggeredAt' in dict_param) and ('CommandId' in dict_param)):
+        sessID  = dict_param['IDESessionUUID']
+        tstamp  = dict_param['TriggeredAt']
+        cmdID   = dict_param['CommandId']
+
+        cmdID.replace("{", "_")
+        cmdID.replace("}", "_")
+        cmdID.replace(":", "_")
+        cmdID.replace(".", "_")
+        str2Write = str2Write + str(sessID) + ',' + str(tstamp) + ','  + cmdID + ',' + '\n'
+    return str2Write
 
 def readJSONFileContent(json_path, key_to_see='test'):
     str2Write = ''
@@ -232,8 +246,8 @@ def readJSONFileContent(json_path, key_to_see='test'):
                        strFromDict = getVersionControlDataFromDict(d_)
                     elif key_to_see=='solution':
                        strFromDict = getSolutionDataFromDict(d_)
-                    # elif key_to_see=='info':
-                    #    strFromDict = getInfoDataFromDict(d_)
+                    elif key_to_see=='command':
+                       strFromDict = getCommandDataFromDict(d_)
                     else:
                        strFromDict = ''
                        print 'KEY IS WRONG ... CHECK!'
@@ -312,6 +326,9 @@ if __name__=='__main__':
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_SOLUTION_CONTENT.csv'
    # key_to_look = 'solution'
 
+   # un parsable commands .... in complete 
+   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_COMMAND_CONTENT.csv'
+   # key_to_look = 'command'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()
