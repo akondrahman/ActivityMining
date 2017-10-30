@@ -56,16 +56,20 @@ if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
     high_count = 0
-    final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
+    final_sess_with_labels = pickle.load(open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
     for index_key, cluster_label in final_sess_with_labels.iteritems():
         if cluster_label==1:
             high_count += 1
     print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
     print '='*50
-    h_grp_build_cnt, l_grp_build_cnt = getBuildCountForClusters(final_sess_with_labels)
-    dumpValuesToFile(h_grp_build_cnt, 'H_BUILD_COUNT.csv')
-    dumpValuesToFile(l_grp_build_cnt, 'L_BUILD_COUNT.csv')
-    print 'Build count data extracted ...'
+    h_grp_t_cnt, l_grp_t_cnt, abort_h, abort_l = getTestCountForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_t_cnt, 'H_TEST_COUNT.csv')
+    dumpValuesToFile(l_grp_t_cnt, 'L_TEST_COUNT.csv')
+    valid_test_cnt_tot   = sum(h_grp_t_cnt) + sum(l_grp_t_cnt)
+    invalid_test_cnt_tot = sum(abort_h) + sum(abort_l)
+    print 'TEST count data extracted ...'
     print '='*50
-    utils.compareTwoGroups(h_grp_build_cnt, l_grp_build_cnt, 'BUILD_COUNT')
+    print '[TOTAL TEST COUNT]=> VALID:{}, INVALID:{}'.format(valid_test_cnt_tot, invalid_test_cnt_tot)
+    print '='*50
+    utils.compareTwoGroups(h_grp_t_cnt, l_grp_t_cnt, 'TEST_COUNT')
     print '='*50
