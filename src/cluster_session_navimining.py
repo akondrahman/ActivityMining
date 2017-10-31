@@ -83,7 +83,7 @@ def getNormalizedNavType(list_):
                dict2Ret[navi_type] = dict2Ret[navi_type] + [type_cnt]
     #print dict2Ret
     all_event_cnt = sum(temp_nav_cnt_holder)
-    print all_event_cnt
+    #print all_event_cnt
     for type_, tot_cnt in dict2Ret.iteritems():
         if type_ not in finalDict:
             percentage       = round(float(sum(tot_cnt))/float(all_event_cnt), 5)*100
@@ -130,18 +130,20 @@ if __name__=='__main__':
     print '='*50
     utils.compareTwoGroups(h_grp_n_cnt, l_grp_n_cnt, 'NAVI_COUNT')
     print '='*50
-    # h_grp_navi_int, l_grp_navi_int = getNavigationIntervalForClusters(final_sess_with_labels)
-    # dumpValuesToFile(h_grp_navi_int, 'H_NAVI_INTERVAL.csv')
-    # dumpValuesToFile(l_grp_navi_int, 'L_NAVI_INTERVAL.csv')
-    # print 'Navigation interval (seconds) data extracted ...'
-    # print '='*50
-    # utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
-    # print '='*50
+    h_grp_navi_int, l_grp_navi_int = getNavigationIntervalForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_navi_int, 'H_NAVI_INTERVAL.csv')
+    dumpValuesToFile(l_grp_navi_int, 'L_NAVI_INTERVAL.csv')
+    print 'Navigation interval (seconds) data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
+    print '='*50
     h_dist_dict, l_dist_dict = getNavigationTypesForClusters(final_sess_with_labels)
-    # print h_dist_dict
-    # print '-'*50
-    # print l_dist_dict
-    # print '-'*50
+    print 'HIGH:'
+    print h_dist_dict
+    print '-'*50
+    print 'LOW:'
+    print l_dist_dict
+    print '-'*50
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
     print '='*100
