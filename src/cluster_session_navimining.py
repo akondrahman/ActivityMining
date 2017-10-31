@@ -69,10 +69,30 @@ def getNavigationIntervalForClusters(sess_with_labels_dict):
 
     return high_grp, low_grp
 
+def getNormalizedNavType(list_):
+    dict2Ret, finalDict = {}, {}
+    temp_nav_cnt_holder = []
+    for sess_data in list_:
+        dist_, event_cnt = sess_data
+        temp_nav_cnt_holder.append(event_cnt)
+        for navi_type, type_cnt in dist_.iteritems():
+            if navi_type not in dict2Ret:
+               dict2Ret[navi_type] = [type_cnt]
+            else:
+               dict2Ret[navi_type] = dict2Ret[navi_type] + [type_cnt]
+    print dict2Ret
+    all_event_cnt = sum(temp_nav_cnt_holder)
+    for type_, tot_cnt in dict2Ret.iteritems():
+        if type_ not in finalDict:
+            percentage       = round(float(sum(tot_cnt))/float(all_event_cnt), 5)*100
+            finalDict[type_] = percentage
+    return finalDict
+
 def getNavigationTypesForClusters(sess_with_labels_dict):
     navi_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_NAVIGATION_CONTENT.csv'
     navi_df      = pd.read_csv(navi_ds_path)
     high_grp, low_grp = [], []
+    dict2Ret = {}
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
         matched_navi_df = navi_df[navi_df['SESS_ID']==sess_id]
         navi_event_cnt = len(matched_navi_df.index)
@@ -83,8 +103,9 @@ def getNavigationTypesForClusters(sess_with_labels_dict):
            high_grp.append(navi_type_tup)
         else:
            low_grp.append(navi_type_tup)
-           
-    return high_grp, low_grp
+    h_nav_dist_dict = getNormalizedNavType(high_grp)
+    l_nav_dist_dict = getNormalizedNavType(low_grp)
+    return h_nav_dist_dict, l_nav_dist_dict
 
 
 if __name__=='__main__':
@@ -114,6 +135,11 @@ if __name__=='__main__':
     print '='*50
     utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
     print '='*50
+    h_dist_dict, l_dist_dict = getNavigationTypesForClusters(final_sess_with_labels)
+    # print h_dist_dict
+    # print '-'*50
+    # print l_dist_dict
+    # print '-'*50
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
     print '='*100
