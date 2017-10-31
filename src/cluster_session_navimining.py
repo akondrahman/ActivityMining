@@ -138,10 +138,10 @@ if __name__=='__main__':
     utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
     print '='*50
     h_dist_dict, l_dist_dict = getNavigationTypesForClusters(final_sess_with_labels)
-    print 'HIGH:'
+    print 'HIGH (NUMBERS ARE IN %):'
     print h_dist_dict
     print '-'*50
-    print 'LOW:'
+    print 'LOW (NUMBERS ARE IN %):'
     print l_dist_dict
     print '-'*50
     print '='*100
