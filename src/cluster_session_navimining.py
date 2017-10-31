@@ -9,6 +9,7 @@ import utils
 import datetime,  time
 import cPickle as pickle
 import numpy as np
+from collections import Counter
 
 def makeTimeHuman(single_val):
     #2016-05-17T01:28:02.8130763+02:00 , timestamp string
@@ -118,23 +119,23 @@ if __name__=='__main__':
             high_count += 1
     print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
     print '='*50
-    h_grp_n_cnt, l_grp_n_cnt = getNavigationCountForClusters(final_sess_with_labels)
-    total_navi_event_cnt = sum(h_grp_n_cnt) + sum(l_grp_n_cnt)
-    dumpValuesToFile(h_grp_n_cnt, 'H_NAVI_COUNT.csv')
-    dumpValuesToFile(l_grp_n_cnt, 'L_NAVI_COUNT.csv')
-    print 'TOTAL NAVIGATION EVENT COUNT:', total_navi_event_cnt
-    print '='*50
-    print 'Navigation count data extracted ...'
-    print '='*50
-    utils.compareTwoGroups(h_grp_n_cnt, l_grp_n_cnt, 'NAVI_COUNT')
-    print '='*50
-    h_grp_navi_int, l_grp_navi_int = getNavigationIntervalForClusters(final_sess_with_labels)
-    dumpValuesToFile(h_grp_navi_int, 'H_NAVI_INTERVAL.csv')
-    dumpValuesToFile(l_grp_navi_int, 'L_NAVI_INTERVAL.csv')
-    print 'Navigation interval (seconds) data extracted ...'
-    print '='*50
-    utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
-    print '='*50
+    # h_grp_n_cnt, l_grp_n_cnt = getNavigationCountForClusters(final_sess_with_labels)
+    # total_navi_event_cnt = sum(h_grp_n_cnt) + sum(l_grp_n_cnt)
+    # dumpValuesToFile(h_grp_n_cnt, 'H_NAVI_COUNT.csv')
+    # dumpValuesToFile(l_grp_n_cnt, 'L_NAVI_COUNT.csv')
+    # print 'TOTAL NAVIGATION EVENT COUNT:', total_navi_event_cnt
+    # print '='*50
+    # print 'Navigation count data extracted ...'
+    # print '='*50
+    # utils.compareTwoGroups(h_grp_n_cnt, l_grp_n_cnt, 'NAVI_COUNT')
+    # print '='*50
+    # h_grp_navi_int, l_grp_navi_int = getNavigationIntervalForClusters(final_sess_with_labels)
+    # dumpValuesToFile(h_grp_navi_int, 'H_NAVI_INTERVAL.csv')
+    # dumpValuesToFile(l_grp_navi_int, 'L_NAVI_INTERVAL.csv')
+    # print 'Navigation interval (seconds) data extracted ...'
+    # print '='*50
+    # utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
+    # print '='*50
     h_dist_dict, l_dist_dict = getNavigationTypesForClusters(final_sess_with_labels)
     # print h_dist_dict
     # print '-'*50
