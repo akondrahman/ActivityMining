@@ -41,3 +41,27 @@ def getNavigationCountForClusters(sess_with_labels_dict):
         else:
            low_grp.append(navi_event_cnt)
     return high_grp, low_grp
+
+if __name__=='__main__':
+    print "Started at:", utils.giveTimeStamp()
+    print '='*100
+    high_count = 0
+    final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
+    for index_key, cluster_label in final_sess_with_labels.iteritems():
+        if cluster_label==1:
+            high_count += 1
+    print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+    print '='*50
+    h_grp_n_cnt, l_grp_n_cnt = getNavigationCountForClusters(final_sess_with_labels)
+    total_navi_event_cnt = sum(h_grp_n_cnt) + sum(l_grp_n_cnt)
+    dumpValuesToFile(h_grp_n_cnt, 'H_NAVI_COUNT.csv')
+    dumpValuesToFile(l_grp_n_cnt, 'L_NAVI_COUNT.csv')
+    print 'TOTAL NAVIGATION EVENT COUNT:', total_navi_event_cnt
+    print '='*50
+    print 'Navigation count data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_n_cnt, l_grp_n_cnt, 'NAVI_COUNT')
+    print '='*50
+    print '='*100
+    print "Ended at:", utils.giveTimeStamp()
+    print '='*100

@@ -124,3 +124,6 @@ if __name__=='__main__':
     print '='*50
     utils.compareTwoGroups(h_grp_build_pass, l_grp_build_pass, 'NORM_BUILD_PASS_RATIO')
     print '='*50
+    print '='*100
+    print "Ended at:", utils.giveTimeStamp()
+    print '='*100
