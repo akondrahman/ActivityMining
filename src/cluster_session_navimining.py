@@ -81,8 +81,9 @@ def getNormalizedNavType(list_):
                dict2Ret[navi_type] = [type_cnt]
             else:
                dict2Ret[navi_type] = dict2Ret[navi_type] + [type_cnt]
-    print dict2Ret
+    #print dict2Ret
     all_event_cnt = sum(temp_nav_cnt_holder)
+    print all_event_cnt
     for type_, tot_cnt in dict2Ret.iteritems():
         if type_ not in finalDict:
             percentage       = round(float(sum(tot_cnt))/float(all_event_cnt), 5)*100
