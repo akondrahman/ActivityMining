@@ -42,6 +42,51 @@ def getNavigationCountForClusters(sess_with_labels_dict):
            low_grp.append(navi_event_cnt)
     return high_grp, low_grp
 
+def getNavigationIntervalForClusters(sess_with_labels_dict):
+    navi_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_NAVIGATION_CONTENT.csv'
+    navi_df      = pd.read_csv(navi_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_with_labels_dict.iteritems():
+        matched_navi_df = navi_df[navi_df['SESS_ID']==sess_id]
+        navi_event_cnt = len(matched_navi_df.index)
+
+        matched_navi_df = matched_navi_df.sort_values(['TIME'])
+        matched_navi_df['FORMATTED_TS'] = matched_navi_df['TIME'].apply(makeTimeHuman)
+        formatted_time_list = matched_navi_df['FORMATTED_TS'].tolist()
+        navi_interval_list  = np.ediff1d(formatted_time_list)
+
+        if ((navi_event_cnt > 0) and (len(navi_interval_list) > 0)):
+            med_navi_inte = round(np.median(navi_interval_list), 5)
+            # med_build_inte = round(np.mean(navi_interval_list), 5)
+            if (med_navi_inte < 0):
+                med_navi_inte = 0.0
+            navi_interval = float(med_navi_inte)/float(navi_event_cnt) #  median navigation interval, normalized by counts
+            navi_interval = round(navi_interval, 5)
+            if sess_label==1:
+               high_grp.append(navi_interval)
+            else:
+               low_grp.append(navi_interval)
+
+    return high_grp, low_grp
+
+def getNavigationTypesForClusters(sess_with_labels_dict):
+    navi_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_NAVIGATION_CONTENT.csv'
+    navi_df      = pd.read_csv(navi_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_with_labels_dict.iteritems():
+        matched_navi_df = navi_df[navi_df['SESS_ID']==sess_id]
+        navi_event_cnt = len(matched_navi_df.index)
+        navi_types = matched_navi_df['TYPE'].tolist()
+        navi_type_dist = dict(Counter(navi_types))
+        navi_type_tup  = (navi_type_dist, navi_event_cnt)
+        if sess_label==1:
+           high_grp.append(navi_type_tup)
+        else:
+           low_grp.append(navi_type_tup)
+           
+    return high_grp, low_grp
+
+
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
@@ -50,7 +95,7 @@ if __name__=='__main__':
     for index_key, cluster_label in final_sess_with_labels.iteritems():
         if cluster_label==1:
             high_count += 1
-    print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+    print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
     print '='*50
     h_grp_n_cnt, l_grp_n_cnt = getNavigationCountForClusters(final_sess_with_labels)
     total_navi_event_cnt = sum(h_grp_n_cnt) + sum(l_grp_n_cnt)
@@ -61,6 +106,13 @@ if __name__=='__main__':
     print 'Navigation count data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_n_cnt, l_grp_n_cnt, 'NAVI_COUNT')
+    print '='*50
+    h_grp_navi_int, l_grp_navi_int = getNavigationIntervalForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_navi_int, 'H_NAVI_INTERVAL.csv')
+    dumpValuesToFile(l_grp_navi_int, 'L_NAVI_INTERVAL.csv')
+    print 'Navigation interval (seconds) data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
     print '='*50
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
