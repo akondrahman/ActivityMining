@@ -5,6 +5,10 @@ Sunday
 Mining Extracted Data
 '''
 '''
+for command the first third columns will eb imported
+edit_ds_file   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/TESTRUN1_ALL_COMMAND_CONTENT.csv'
+edit_df        = pd.read_csv(edit_ds_file, usecols=[0, 1, 2])
+
 for solution and navigation, the first five columsn will be imported: others all
 edit_ds_file   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/LOCKED_ALL_SOLUTION_CONTENT.csv'
 edit_df        = pd.read_csv(edit_ds_file, usecols=[0, 1, 2, 3, 4])
@@ -23,8 +27,8 @@ def giveTimeStamp():
 if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
-   edit_ds_file   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_COMMAND_CONTENT.csv'
-   edit_df        = pd.read_csv(edit_ds_file)
+   edit_ds_file   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/TESTRUN1_ALL_COMMAND_CONTENT.csv'
+   edit_df        = pd.read_csv(edit_ds_file, usecols=[0, 1, 2])
    print edit_df.head()
 
    print '='*100
