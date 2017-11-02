@@ -38,7 +38,10 @@ def getDebugCountForClusters(sess_with_labels_dict):
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
         matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
-        debug_event_cnt = len(matched_debug_df.index)
+        #debug_event_cnt = len(matched_debug_df.index)
+        # need to filter out debug actions that occur for exceptions
+        non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
+        debug_event_cnt = len(non_exception_debug_df.index)
         if sess_label==1:
            high_grp.append(debug_event_cnt)
         else:
@@ -51,11 +54,13 @@ def getDebugIntervalForClusters(sess_with_labels_dict):
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
         matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
-        debug_event_cnt = len(matched_debug_df.index)
+        # need to filter out debug actions that occur for exceptions
+        non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
+        debug_event_cnt = len(non_exception_debug_df.index)
 
-        matched_debug_df = matched_debug_df.sort_values(['TIME'])
-        matched_debug_df['FORMATTED_TS'] = matched_debug_df['TIME'].apply(makeTimeHuman)
-        formatted_time_list = matched_debug_df['FORMATTED_TS'].tolist()
+        non_exception_debug_df = non_exception_debug_df.sort_values(['TIME'])
+        non_exception_debug_df['FORMATTED_TS'] = non_exception_debug_df['TIME'].apply(makeTimeHuman)
+        formatted_time_list = non_exception_debug_df['FORMATTED_TS'].tolist()
         debug_interval_list  = np.ediff1d(formatted_time_list)
 
         if ((debug_event_cnt > 0) and (len(debug_interval_list) > 0)):
@@ -98,4 +103,4 @@ if __name__=='__main__':
     print 'Debug interval (seconds) data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_debug_int, l_grp_debug_int, 'NORM_DEBUG_INTERVAL')
-    print '='*50    
+    print '='*50
