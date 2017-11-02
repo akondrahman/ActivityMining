@@ -44,3 +44,26 @@ def getDebugCountForClusters(sess_with_labels_dict):
         else:
            low_grp.append(debug_event_cnt)
     return high_grp, low_grp
+
+
+
+if __name__=='__main__':
+    print "Started at:", utils.giveTimeStamp()
+    print '='*100
+    high_count = 0
+    final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
+    for index_key, cluster_label in final_sess_with_labels.iteritems():
+        if cluster_label==1:
+            high_count += 1
+    print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+    print '='*50
+    h_grp_d_cnt, l_grp_d_cnt = getDebugCountForClusters(final_sess_with_labels)
+    total_debug_event_cnt = sum(h_grp_d_cnt) + sum(l_grp_d_cnt)
+    dumpValuesToFile(h_grp_d_cnt, 'H_DEBUG_COUNT.csv')
+    dumpValuesToFile(l_grp_d_cnt, 'L_DEBUG_COUNT.csv')
+    print 'TOTAL DEBUG EVENT COUNT: {}, HIGH DEBUG EVENT COUNT:{}, LOW DEBUG EVENT COUNT:{}'.format(total_debug_event_cnt, sum(h_grp_d_cnt), sum(l_grp_d_cnt))
+    print '='*50
+    print 'Debugging count data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_d_cnt, l_grp_d_cnt, 'DEBUG_COUNT')
+    print '='*50
