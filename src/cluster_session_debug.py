@@ -31,3 +31,16 @@ def dumpValuesToFile(list_param, file2save):
     os_bytes = utils.dumpContentIntoFile(str2write, file2save)
     print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
     return os_bytes
+
+def getDebugCountForClusters(sess_with_labels_dict):
+    debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
+    debug_df      = pd.read_csv(debug_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_with_labels_dict.iteritems():
+        matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
+        debug_event_cnt = len(matched_debug_df.index)
+        if sess_label==1:
+           high_grp.append(debug_event_cnt)
+        else:
+           low_grp.append(debug_event_cnt)
+    return high_grp, low_grp
