@@ -45,7 +45,32 @@ def getDebugCountForClusters(sess_with_labels_dict):
            low_grp.append(debug_event_cnt)
     return high_grp, low_grp
 
+def getDebugIntervalForClusters(sess_with_labels_dict):
+    debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
+    debug_df      = pd.read_csv(debug_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_with_labels_dict.iteritems():
+        matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
+        debug_event_cnt = len(matched_debug_df.index)
 
+        matched_debug_df = matched_debug_df.sort_values(['TIME'])
+        matched_debug_df['FORMATTED_TS'] = matched_debug_df['TIME'].apply(makeTimeHuman)
+        formatted_time_list = matched_debug_df['FORMATTED_TS'].tolist()
+        debug_interval_list  = np.ediff1d(formatted_time_list)
+
+        if ((debug_event_cnt > 0) and (len(debug_interval_list) > 0)):
+            med_debug_inte = round(np.median(debug_interval_list), 5)
+            # med_build_inte = round(np.mean(navi_interval_list), 5)
+            if (med_debug_inte < 0):
+                med_debug_inte = 0.0
+            debug_interval = float(med_debug_inte)/float(debug_event_cnt) #  median navigation interval, normalized by counts
+            debug_interval = round(debug_interval, 5)
+            if sess_label==1:
+               high_grp.append(debug_interval)
+            else:
+               low_grp.append(debug_interval)
+
+    return high_grp, low_grp
 
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
@@ -67,3 +92,10 @@ if __name__=='__main__':
     print '='*50
     utils.compareTwoGroups(h_grp_d_cnt, l_grp_d_cnt, 'DEBUG_COUNT')
     print '='*50
+    h_grp_debug_int, l_grp_debug_int = getDebugIntervalForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_debug_int, 'H_DEBUG_INTERVAL.csv')
+    dumpValuesToFile(l_grp_debug_int, 'L_DEBUG_INTERVAL.csv')
+    print 'Debug interval (seconds) data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_debug_int, l_grp_debug_int, 'NORM_DEBUG_INTERVAL')
+    print '='*50    
