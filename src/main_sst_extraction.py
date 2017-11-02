@@ -54,8 +54,9 @@ def getHierarchyDataFromDict(dict_param):
 
 def getMethInfo(meth_param):
    name_holder, param_holder = [], []
-   meth_content_list=meth_param['Body']
-   for meth_content in meth_content_list:
+   if ('Body' in meth_param):
+     meth_content_list=meth_param['Body']
+     for meth_content in meth_content_list:
        if ('Expression' in meth_content):
            express_dict = meth_content['Expression']
            if(('MethodName' in express_dict) and ('Parameters' in express_dict)):
@@ -67,8 +68,9 @@ def getMethInfo(meth_param):
 
 def getOperaInfo(meth_body):
    left_operand_list, right_operand_list, operator_list = [], [], []
-   meth_content_list=meth_body['Body']
-   for meth_content in meth_content_list:
+   if ('Body' in meth_body):
+     meth_content_list=meth_body['Body']
+     for meth_content in meth_content_list:
        if (('$type' in meth_content) and ('Expression' in meth_content)):
            key2see = meth_content['$type'].lower()
            if('assignment' in key2see):
@@ -107,7 +109,7 @@ def getSSTDataFromDict(dict_param):
                avg_diff, med_diff, avg_eff, med_eff       = 0, 0, 0, 0
                avg_voc, med_voc, avg_len, med_len         = 0, 0 , 0, 0
                avg_param_cnt, med_param_cnt, uni_meth_cnt = 0, 0, 0
-               for meth_body_ in meth_ls:
+               for meth_body_ in dele_ls:           ### THIS WILL CHANGE FOR METHODS, DELEGATES, PROPETIES, FIELDS 
                    ###1 . stuff for healstead
                    left_operand_list, right_operand_list, operator_list  = getOperaInfo(meth_body_)
                    operand_cnt= len(left_operand_list) + len(right_operand_list)
@@ -208,15 +210,15 @@ if __name__=='__main__':
    print "Started at:", giveTimeStamp()
    print '='*100
    # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/TEST/'
-   # ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
+   ds_path   = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/Events-170301/'
 
    ## FOLOWWING IS DONE
    # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_HIERARCHY_CONTENT.csv'
    # key_to_look = 'hierarchy'
 
    ## FOLOWWING IS DONE
-   # file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EDIT_SST_CONTENT.csv'
-   # key_to_look = 'sst'
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_DELEG_COMPLEXITY_CONTENT.csv'
+   key_to_look = 'sst'
 
    get_all_data(ds_path, key_to_look, file2save)
    print "Ended at:", giveTimeStamp()

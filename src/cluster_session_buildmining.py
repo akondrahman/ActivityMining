@@ -104,6 +104,9 @@ if __name__=='__main__':
     print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
     print '='*50
     h_grp_build_cnt, l_grp_build_cnt = getBuildCountForClusters(final_sess_with_labels)
+    total_build_cnt = sum(h_grp_build_cnt) + sum(l_grp_build_cnt)
+    print 'TOTAL BUILD EVENT COUNT: {}, HIGH BUILD EVENT COUNT:{}, LOW BUILD EVENT COUNT:{}'.format(total_build_cnt, sum(h_grp_build_cnt), sum(l_grp_build_cnt))
+    print '='*50
     dumpValuesToFile(h_grp_build_cnt, 'H_BUILD_COUNT.csv')
     dumpValuesToFile(l_grp_build_cnt, 'L_BUILD_COUNT.csv')
     print 'Build count data extracted ...'

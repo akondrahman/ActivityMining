@@ -169,6 +169,21 @@ def getEditLOCACHNGForClusters(sess_dict):
            low_grp.append(norm_edit_loc_cng)
     return high_grp, low_grp
 
+def getMethCntAllSessions(datafile_path, sess_dict_p):
+    high_grp, low_grp = [], []
+    meth_df   = pd.read_csv(datafile_path)
+
+    for sess_id, sess_label in sess_dict_p.iteritems():
+        matched_meth_df   = meth_df[meth_df['SESS_ID']==sess_id]
+        matched_meth_cnt  = len(matched_meth_df.index)
+
+        if sess_label==1:
+           high_grp.append(matched_meth_cnt)
+        else:
+           low_grp.append(matched_meth_cnt)
+    return high_grp, low_grp
+
+
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
@@ -176,7 +191,7 @@ if __name__=='__main__':
     df = getUnderstandabilityOfAllSessions(file_path)
     df2Cluster = df.drop(df.columns[0], 1)
     #print df2Cluster
-    #determineBestCluster(df2Cluster)
+    determineBestCluster(df2Cluster)
     valsWithLabels = clusterValues(df2Cluster, 2) ## two cluter mechnsim as seen by Silhouette wirdth
     high_count = 0
     #print valsWithLabels
@@ -217,6 +232,13 @@ if __name__=='__main__':
     print 'Normalized median edit location-changes extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_loc_chng, l_grp_edit_loc_chng, 'NORM_EDIT_LOC_CHNG')
+    print '='*50
+    h_grp_met_cnt, l_grp_met_cnt = getMethCntAllSessions(file_path, final_sess_with_labels)
+    dumpValuesToFile(h_grp_met_cnt, 'H_METH_CNT.csv')
+    dumpValuesToFile(l_grp_met_cnt, 'L_METH_CNT.csv')
+    print 'Method count per session extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_met_cnt, l_grp_met_cnt, 'METHOD_COUNT')
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
     print '='*100
