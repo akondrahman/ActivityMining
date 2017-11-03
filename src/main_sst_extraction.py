@@ -109,7 +109,7 @@ def getSSTDataFromDict(dict_param):
                avg_diff, med_diff, avg_eff, med_eff       = 0, 0, 0, 0
                avg_voc, med_voc, avg_len, med_len         = 0, 0 , 0, 0
                avg_param_cnt, med_param_cnt, uni_meth_cnt = 0, 0, 0
-               for meth_body_ in fiel_ls:           ### THIS WILL CHANGE FOR METHODS, DELEGATES, PROPETIES, FIELDS
+               for meth_body_ in even_ls:           ### THIS WILL CHANGE FOR METHODS, DELEGATES, PROPETIES, FIELDS
                    ###1 . stuff for healstead
                    left_operand_list, right_operand_list, operator_list  = getOperaInfo(meth_body_)
                    operand_cnt= len(left_operand_list) + len(right_operand_list)
@@ -217,7 +217,7 @@ if __name__=='__main__':
    # key_to_look = 'hierarchy'
 
    ## FOLOWWING IS DONE
-   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_FIELDS_COMPLEXITY_CONTENT.csv'
+   file2save = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/ALL_EVENTS_COMPLEXITY_CONTENT.csv'
    key_to_look = 'sst'
 
    get_all_data(ds_path, key_to_look, file2save)
