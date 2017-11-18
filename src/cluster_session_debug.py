@@ -119,7 +119,7 @@ def getDebugReasonsForClusters(sess_with_labels_dict):
     l_d_dist_dict = getNormalizedDebugReason(low_grp)
     return h_d_dist_dict, l_d_dist_dict
 
-def getDebugReasonsForClusters(sess_with_labels_dict):
+def getDebugStepCountForClusters(sess_with_labels_dict):
     debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
     debug_df      = pd.read_csv(debug_ds_path)
     high_grp, low_grp = [], []
@@ -173,6 +173,11 @@ if __name__=='__main__':
     print 'LOW (NUMBERS ARE IN %):'
     print l_dist_dict
     print '-'*50
+    h_debug_step_cnt, h_debug_step_cnt = getDebugStepCountForClusters(final_sess_with_labels)
+    print 'Debugging count data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_debug_step_cnt, h_debug_step_cnt, 'DEBUG_STEP_COUNT')
+    print '='*50
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
     print '='*100
