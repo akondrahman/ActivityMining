@@ -214,6 +214,16 @@ if __name__=='__main__':
     print 'Debug step count data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_debug_step_cnt, l_debug_step_cnt, 'DEBUG_STEP_COUNT')
+    dumpValuesToFile(h_debug_step_cnt, 'H_DEBUG_COUNT.csv')
+    dumpValuesToFile(l_debug_step_cnt, 'L_DEBUG_COUNT.csv')
+    print 'Debug step count data extracted ...'
+    print '='*50
+    h_grp_debug_step_int, l_grp_debug_step_int = getDebugStepIntervalForClusters(final_sess_with_labels)
+    dumpValuesToFile(h_grp_debug_step_int, 'H_DEBUG_STEP_INTERVAL.csv')
+    dumpValuesToFile(l_grp_debug_step_int, 'L_DEBUG_STEP_INTERVAL.csv')
+    print 'Debug step interval (seconds) data extracted ...'
+    print '='*50
+    utils.compareTwoGroups(h_grp_debug_int, l_grp_debug_int, 'NORM_DEBUG_STEP_INTERVAL')
     print '='*50
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
