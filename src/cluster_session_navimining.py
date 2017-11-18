@@ -9,7 +9,7 @@ import utils
 import datetime,  time
 import cPickle as pickle
 import numpy as np
-from collections import Counter 
+from collections import Counter
 
 def makeTimeHuman(single_val):
     #2016-05-17T01:28:02.8130763+02:00 , timestamp string
@@ -108,6 +108,8 @@ def getNavigationTypesForClusters(sess_with_labels_dict):
     h_nav_dist_dict = getNormalizedNavType(high_grp)
     l_nav_dist_dict = getNormalizedNavType(low_grp)
     return h_nav_dist_dict, l_nav_dist_dict
+
+
 
 
 if __name__=='__main__':

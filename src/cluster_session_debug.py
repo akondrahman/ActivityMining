@@ -119,6 +119,25 @@ def getDebugReasonsForClusters(sess_with_labels_dict):
     l_d_dist_dict = getNormalizedDebugReason(low_grp)
     return h_d_dist_dict, l_d_dist_dict
 
+def getDebugReasonsForClusters(sess_with_labels_dict):
+    debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
+    debug_df      = pd.read_csv(debug_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_with_labels_dict.iteritems():
+        matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
+        # need to filter out debug actions that occur for exceptions
+        non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
+        debug_event_cnt = len(non_exception_debug_df.index)
+
+        debug_step_df = non_exception_debug_df[non_exception_debug_df['REASON']=='dbgEventReasonStep']
+        debug_step_cnt = len(debug_step_df.index)
+
+        if sess_label==1:
+           high_grp.append(debug_step_cnt)
+        else:
+           low_grp.append(debug_step_cnt)
+
+    return high_grp, low_grp
 
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
