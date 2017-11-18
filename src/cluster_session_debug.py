@@ -155,6 +155,8 @@ def getDebugStepIntervalForClusters(sess_with_labels_dict):
 
         non_exception_debug_df = non_exception_debug_df.sort_values(['TIME'])
         non_exception_debug_df['FORMATTED_TS'] = non_exception_debug_df['TIME'].apply(makeTimeHuman)
+        all_debug_time_list  = non_exception_debug_df['FORMATTED_TS'].tolist()
+        alldebug_inter_list  = np.ediff1d(all_debug_time_list)
 
         debug_step_df = non_exception_debug_df[non_exception_debug_df['REASON']=='dbgEventReasonStep']
         debug_step_cnt = len(debug_step_df.index)
@@ -165,6 +167,7 @@ def getDebugStepIntervalForClusters(sess_with_labels_dict):
         if ((debug_step_cnt > 0) and (len(debugstep_interval_list) > 0)):
             med_debugstep_inte = round(np.median(debugstep_interval_list), 5)
             # med_debugstep_inte = round(np.mean(debugstep_interval_list), 5)
+            med_all_debug_int_list = np.median(alldebug_inter_list)
             if (med_debugstep_inte < 0):
                 med_debugstep_inte = 0.0
             debug_step_interval = float(med_debugstep_inte)/float(debug_step_cnt) #  median debug step interval, normalized by counts
