@@ -131,12 +131,14 @@ def getDebugStepCountForClusters(sess_with_labels_dict):
 
         debug_step_df = non_exception_debug_df[non_exception_debug_df['REASON']=='dbgEventReasonStep']
         debug_step_cnt = len(debug_step_df.index)
-        norm_debug_step = float(debug_step_cnt)/float(debug_event_cnt)
 
-        if sess_label==1:
-           high_grp.append(norm_debug_step)
-        else:
-           low_grp.append(norm_debug_step)
+        if ((debug_event_cnt > 0) and (debug_step_cnt > 0)):
+           norm_debug_step = float(debug_step_cnt)/float(debug_event_cnt)
+
+           if sess_label==1:
+              high_grp.append(norm_debug_step)
+           else:
+              low_grp.append(norm_debug_step)
 
     return high_grp, low_grp
 
