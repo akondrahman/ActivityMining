@@ -68,7 +68,7 @@ def getDebugIntervalForClusters(sess_with_labels_dict):
             # med_build_inte = round(np.mean(navi_interval_list), 5)
             if (med_debug_inte < 0):
                 med_debug_inte = 0.0
-            debug_interval = float(med_debug_inte)/float(debug_event_cnt) #  median navigation interval, normalized by counts
+            debug_interval = float(med_debug_inte)/float(debug_event_cnt) #  median debug interval, normalized by counts
             debug_interval = round(debug_interval, 5)
             if sess_label==1:
                high_grp.append(debug_interval)
@@ -131,11 +131,46 @@ def getDebugStepCountForClusters(sess_with_labels_dict):
 
         debug_step_df = non_exception_debug_df[non_exception_debug_df['REASON']=='dbgEventReasonStep']
         debug_step_cnt = len(debug_step_df.index)
+        norm_debug_step = float(debug_step_cnt)/float(debug_event_cnt)
 
         if sess_label==1:
-           high_grp.append(debug_step_cnt)
+           high_grp.append(norm_debug_step)
         else:
-           low_grp.append(debug_step_cnt)
+           low_grp.append(norm_debug_step)
+
+    return high_grp, low_grp
+
+
+def getDebugStepIntervalForClusters(sess_with_labels_dict):
+    debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
+    debug_df      = pd.read_csv(debug_ds_path)
+    high_grp, low_grp = [], []
+    for sess_id, sess_label in sess_with_labels_dict.iteritems():
+        matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
+        # need to filter out debug actions that occur for exceptions
+        non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
+        debug_event_cnt = len(non_exception_debug_df.index)
+
+        non_exception_debug_df = non_exception_debug_df.sort_values(['TIME'])
+        non_exception_debug_df['FORMATTED_TS'] = non_exception_debug_df['TIME'].apply(makeTimeHuman)
+
+        debug_step_df = non_exception_debug_df[non_exception_debug_df['REASON']=='dbgEventReasonStep']
+        debug_step_cnt = len(debug_step_df.index)
+
+        formatted_time_list = debug_step_df['FORMATTED_TS'].tolist()
+        debugstep_interval_list  = np.ediff1d(formatted_time_list)
+
+        if ((debug_step_cnt > 0) and (len(debugstep_interval_list) > 0)):
+            med_debugstep_inte = round(np.median(debugstep_interval_list), 5)
+            # med_debugstep_inte = round(np.mean(debugstep_interval_list), 5)
+            if (med_debugstep_inte < 0):
+                med_debugstep_inte = 0.0
+            debug_step_interval = float(med_debugstep_inte)/float(debug_step_cnt) #  median debug step interval, normalized by counts
+            debug_step_interval = round(debug_step_interval, 5)
+            if sess_label==1:
+               high_grp.append(debug_step_interval)
+            else:
+               low_grp.append(debug_step_interval)
 
     return high_grp, low_grp
 
@@ -173,10 +208,10 @@ if __name__=='__main__':
     print 'LOW (NUMBERS ARE IN %):'
     print l_dist_dict
     print '-'*50
-    h_debug_step_cnt, h_debug_step_cnt = getDebugStepCountForClusters(final_sess_with_labels)
-    print 'Debugging count data extracted ...'
+    h_debug_step_cnt, l_debug_step_cnt = getDebugStepCountForClusters(final_sess_with_labels)
+    print 'Debug step count data extracted ...'
     print '='*50
-    utils.compareTwoGroups(h_debug_step_cnt, h_debug_step_cnt, 'DEBUG_STEP_COUNT')
+    utils.compareTwoGroups(h_debug_step_cnt, l_debug_step_cnt, 'DEBUG_STEP_COUNT')
     print '='*50
     print '='*100
     print "Ended at:", utils.giveTimeStamp()
