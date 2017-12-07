@@ -20,7 +20,7 @@ def makeTimeHuman(single_val):
     second2ret = datetime.timedelta(hours=x.tm_hour, minutes=x.tm_min, seconds=x.tm_sec).total_seconds()
     return second2ret
 
-def getHalstedDetails():
+def getHalstedDetails(valid_sess_p):
    halstead_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_SST_CONTENT.csv'
    complexity_df   = pd.read_csv(halstead_path)
    complexity_df   = complexity_df.drop('TIME', 1)
@@ -42,10 +42,9 @@ def getHalstedDetails():
 
    allSessIDs = np.unique(df2ret['SESS_ID'].tolist())
    print '='*50
-   print 'UNIQUE SESSION COUNT:', len(allSessIDs)
-   print '-'*50
    all_sess_data = []
    for sessID in allSessIDs:
+     if sessID in valid_sess_p:
        per_sess_difficulty = df2ret[df2ret['SESS_ID']==sessID]['NORM_MED_DIF'].tolist()
        per_sess_volume     = df2ret[df2ret['SESS_ID']==sessID]['NORM_MED_VOL'].tolist()
        per_sess_param_cnt  = df2ret[df2ret['SESS_ID']==sessID]['NORM_PARAMS'].tolist()
@@ -70,20 +69,21 @@ def dumpValuesToFile(list_param, file2save):
     return os_bytes
 
 
-def compareHalsteadMetrics(df_, dict_):
+def compareHalsteadMetrics(df_, dict_, valid_sess_p):
     hig_dif, low_dif = [], []
     hig_vol, low_vol = [], []
     hig_pct, low_pct = [], []
     for sess_id, sess_label in dict_.iteritems():
-        matched_df = df_[df_['SESS_ID']==sess_id]
-        dif = np.median(matched_df['DIFF'].tolist())
-        vol = np.median(matched_df['VOLU'].tolist())
-        pct = np.median(matched_df['PARA'].tolist())
-        if sess_label == 1 :
+      if sess_id in valid_sess_p:
+         matched_df = df_[df_['SESS_ID']==sess_id]
+         dif = np.median(matched_df['DIFF'].tolist())
+         vol = np.median(matched_df['VOLU'].tolist())
+         pct = np.median(matched_df['PARA'].tolist())
+         if sess_label == 1 :
             hig_dif.append(dif)
             hig_vol.append(vol)
             hig_pct.append(pct)
-        else:
+         else:
             low_dif.append(dif)
             low_vol.append(vol)
             low_pct.append(pct)
@@ -107,13 +107,20 @@ def compareHalsteadMetrics(df_, dict_):
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
-    high_count = 0
+    high_count, low_count = 0, 0
     final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
-    for index_key, cluster_label in final_sess_with_labels.iteritems():
+    '''
+    TO handle filtered sessions absed on duration
+    '''
+    valid_sess = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/VALID.SESSION.IDS.LIST', 'rb'))
+    for sessID, cluster_label in final_sess_with_labels.iteritems():
+      if sessID in valid_sess:
         if cluster_label==1:
             high_count += 1
-    print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+        else:
+            low_count +=  1
+    print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(high_count + low_count, high_count, low_count)
     print '='*50
-    df_halstead  = getHalstedDetails()
+    df_halstead  = getHalstedDetails(valid_sess)
     print '='*50
-    compareHalsteadMetrics(df_halstead, final_sess_with_labels)
+    compareHalsteadMetrics(df_halstead, final_sess_with_labels, valid_sess)

@@ -191,29 +191,27 @@ if __name__=='__main__':
     df = getUnderstandabilityOfAllSessions(file_path)
     df2Cluster = df.drop(df.columns[0], 1)
     #print df2Cluster
-    determineBestCluster(df2Cluster)
+    # determineBestCluster(df2Cluster)
     valsWithLabels = clusterValues(df2Cluster, 2) ## two cluter mechnsim as seen by Silhouette wirdth
-    high_count = 0
+    high_count, low_count = 0, 0
     final_sess_with_labels = {}
     '''
     TO handle filtered sessions absed on duration
     '''
-    valid_sess = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/LOCKED.VALID.SESSION.IDS.LIST', 'rb'))
-    for sessID in valid_sess:
-        if sessID in valsWithLabels:
-            cluster_label = valsWithLabels[sessID]
-            final_sess_with_labels[sessID] = cluster_label 
+    valid_sess = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/VALID.SESSION.IDS.LIST', 'rb'))
+    for index_key, cluster_label in valsWithLabels.iteritems():
+         sessID = df.iloc[index_key, 0]
+         if sessID in valid_sess:
+            cluster_label = valsWithLabels[index_key]
+            final_sess_with_labels[sessID] = cluster_label
             if cluster_label==1:
-               high_count += 1
-    print 'Total:{}, High:{}, Low:{}'.format(len(df.index), high_count, len(valsWithLabels) - high_count)
+                high_count += 1
+            else:
+                low_count += 1
+    print 'Total:{}, High:{}, Low:{}'.format(high_count + low_count, high_count, low_count)
     print '='*50
     pickle.dump( final_sess_with_labels, open( "SESSION.LABELS.DUMP", "wb" ) )
     #print valsWithLabels
-
-    # for index_key, cluster_label in valsWithLabels.iteritems():
-    #     sessID = df.iloc[index_key, 0]
-    #     final_sess_with_labels[sessID] = cluster_label
-
 
     print 'Labeling completed for {} sessions'.format(len(final_sess_with_labels))
     print '='*50

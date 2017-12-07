@@ -182,12 +182,19 @@ def getDebugStepIntervalForClusters(sess_with_labels_dict):
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
-    high_count = 0
+    high_count, low_count  = 0, 0
     final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
+    '''
+    TO handle filtered sessions absed on duration
+    '''
+    valid_sess = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/VALID.SESSION.IDS.LIST', 'rb'))
     for index_key, cluster_label in final_sess_with_labels.iteritems():
+      if sessID in valid_sess:
         if cluster_label==1:
             high_count += 1
-    print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+        else:
+            low_count +=  1
+    print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(high_count + low_count, high_count, low_count)
     print '='*50
     h_grp_d_cnt, l_grp_d_cnt = getDebugCountForClusters(final_sess_with_labels)
     total_debug_event_cnt = sum(h_grp_d_cnt) + sum(l_grp_d_cnt)
