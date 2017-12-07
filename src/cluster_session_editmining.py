@@ -14,7 +14,7 @@ import datetime,  time
 import cPickle as pickle
 
 def makeTimeHuman(single_val):
-    #2016-05-07T00:22:34.7609533+02:00 , timestamp string 
+    #2016-05-07T00:22:34.7609533+02:00 , timestamp string
     dt_  = single_val.split('T')[1]
     ts_  = dt_.split('+')[0]
     x = time.strptime(ts_.split('.')[0],'%H:%M:%S')
@@ -194,16 +194,27 @@ if __name__=='__main__':
     determineBestCluster(df2Cluster)
     valsWithLabels = clusterValues(df2Cluster, 2) ## two cluter mechnsim as seen by Silhouette wirdth
     high_count = 0
-    #print valsWithLabels
     final_sess_with_labels = {}
-    for index_key, cluster_label in valsWithLabels.iteritems():
-        sessID = df.iloc[index_key, 0]
-        final_sess_with_labels[sessID] = cluster_label
-        if cluster_label==1:
-            high_count += 1
+    '''
+    TO handle filtered sessions absed on duration
+    '''
+    valid_sess = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/LOCKED.VALID.SESSION.IDS.LIST', 'rb'))
+    for sessID in valid_sess:
+        if sessID in valsWithLabels:
+            cluster_label = valsWithLabels[sessID]
+            final_sess_with_labels[sessID] = cluster_label 
+            if cluster_label==1:
+               high_count += 1
     print 'Total:{}, High:{}, Low:{}'.format(len(df.index), high_count, len(valsWithLabels) - high_count)
     print '='*50
     pickle.dump( final_sess_with_labels, open( "SESSION.LABELS.DUMP", "wb" ) )
+    #print valsWithLabels
+
+    # for index_key, cluster_label in valsWithLabels.iteritems():
+    #     sessID = df.iloc[index_key, 0]
+    #     final_sess_with_labels[sessID] = cluster_label
+
+
     print 'Labeling completed for {} sessions'.format(len(final_sess_with_labels))
     print '='*50
     h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels)
