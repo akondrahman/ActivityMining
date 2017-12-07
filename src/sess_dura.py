@@ -34,9 +34,6 @@ def getSessionDuration(file_path):
    all_dur = []
    full_df   = pd.read_csv(file_path)
    allSessIDs = np.unique(full_df['SESS_ID'].tolist())
-   print '='*50
-   print 'UNIQUE SESSION COUNT:', len(allSessIDs)
-   print '-'*50
    for sessID in allSessIDs:
        per_sess_df = full_df[full_df['SESS_ID']==sessID]
        per_sess_dura = getDuration(per_sess_df)
@@ -54,11 +51,13 @@ def dumpValidSessions(cutoff_, df_):
    print '-'*50
    for sessID in allSessIDs:
        per_sess_df = df_[df_['SESS_ID']==sessID]
-       per_sess_dura = getDuration(per_sess_df)
+       per_sess_dura = per_sess_df['DURA'].tolist()[0]
        if(per_sess_dura >= cutoff_):
           validSessIDs.append(sessID)
    pickle.dump( validSessIDs, open( "VALID.SESSION.IDS.LIST", "wb" ) )
    print 'UNIQUE SESSION COUNT AFTER FILTERING:', len(validSessIDs)
+   print '-'*50
+
 
 if __name__=='__main__':
   file_name  = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/REDUCED_ALL_COMMAND_CONTENT.csv'
