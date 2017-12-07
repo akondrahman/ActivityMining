@@ -14,7 +14,7 @@ import datetime,  time
 import cPickle as pickle
 
 def makeTimeHuman(single_val):
-    #2016-05-07T00:22:34.7609533+02:00 , timestamp string
+    #2016-05-07T00:22:34.7609533+02:00 , timestamp string 
     dt_  = single_val.split('T')[1]
     ts_  = dt_.split('+')[0]
     x = time.strptime(ts_.split('.')[0],'%H:%M:%S')

@@ -119,7 +119,7 @@ if __name__=='__main__':
     final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
     for index_key, cluster_label in final_sess_with_labels.iteritems():
         if cluster_label==1:
-            high_count += 1
+            high_count += 1 
     print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
     print '='*50
     h_grp_n_cnt, l_grp_n_cnt = getNavigationCountForClusters(final_sess_with_labels)
