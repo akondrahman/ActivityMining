@@ -96,9 +96,9 @@ def compareHalsteadMetrics(df_, dict_):
     print '*'*25
 
     ### COMAPRE PARTAMETR COUT
-    utils.compareTwoGroups(hig_vol, low_vol, 'HALSTEAD:VOLUME')
-    dumpValuesToFile(hig_dif, 'H_VOLU.csv')
-    dumpValuesToFile(low_dif, 'L_VOLU.csv')
+    utils.compareTwoGroups(hig_pct, low_pct, 'HALSTEAD:PARAMETER:COUNT')
+    dumpValuesToFile(hig_pct, 'H_PARA.csv')
+    dumpValuesToFile(low_pct, 'L_PARA.csv')
     print '*'*25
 
 if __name__=='__main__':
