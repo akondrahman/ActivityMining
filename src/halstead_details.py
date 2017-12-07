@@ -49,13 +49,15 @@ def getHalstedDetails():
        per_sess_difficulty = df2ret[df2ret['SESS_ID']==sessID]['NORM_MED_DIF'].tolist()
        per_sess_volume     = df2ret[df2ret['SESS_ID']==sessID]['NORM_MED_VOL'].tolist()
        per_sess_param_cnt  = df2ret[df2ret['SESS_ID']==sessID]['NORM_PARAMS'].tolist()
-       #print per_sess_difficulty
+       # print per_sess_difficulty
        per_sess_med_dif, per_sess_med_vol, per_sess_med_pcnt = np.median(per_sess_difficulty), np.median(per_sess_volume), np.median(per_sess_param_cnt)
        per_sess_ = (sessID, per_sess_med_dif, per_sess_med_vol, per_sess_med_pcnt)
        all_sess_data.append(per_sess_)
-   df_ = pd.DataFrame.from_records(all_sess_data, usecols=['SESIID', 'DIFF', 'VOLU', 'PARA'])
-   print df_.head()
-   # return df_
+   df_ = pd.DataFrame.from_records(all_sess_data, columns=['SESSID', 'DIFF', 'VOLU', 'PARA'])
+   # print df_.head()
+   ### Summary of all data
+   print df_.describe()
+   return df_
 
 
 
