@@ -30,11 +30,12 @@ def dumpValuesToFile(list_param, file2save):
     print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
     return os_bytes
 
-def getTestCountForClusters(sess_with_labels):
+def getTestCountForClusters(sess_with_labels, valid_sess_p):
     test_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_TEST_CONTENT.csv'
     test_df   = pd.read_csv(test_ds_path)
     h_aborted, l_aborted, high_grp, low_grp = [], [], [], []
     for sess_id, sess_label in sess_with_labels.iteritems():
+      if sess_id in valid_sess_p:
         matched_test_df = test_df[test_df['SESS_ID']==sess_id]
 
         valid_test_df   = matched_test_df[matched_test_df['ABORT']==False]

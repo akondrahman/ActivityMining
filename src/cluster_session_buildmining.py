@@ -30,11 +30,12 @@ def dumpValuesToFile(list_param, file2save):
     print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
     return os_bytes
 
-def getBuildCountForClusters(sess_with_labels_dict):
+def getBuildCountForClusters(sess_with_labels_dict, valid_sess_p):
     build_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_BUILD_CONTENT.csv'
     build_df   = pd.read_csv(build_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_build_df = build_df[build_df['SESS_ID']==sess_id]
         build_event_cnt = len(matched_build_df.index)
         if sess_label==1:
@@ -43,11 +44,12 @@ def getBuildCountForClusters(sess_with_labels_dict):
            low_grp.append(build_event_cnt)
     return high_grp, low_grp
 
-def getBuildIntervalForClusters(sess_with_labels_dict):
+def getBuildIntervalForClusters(sess_with_labels_dict, valid_sess_p):
     build_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_BUILD_CONTENT.csv'
     build_df   = pd.read_csv(build_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_build_df = build_df[build_df['SESS_ID']==sess_id]
         build_event_cnt = len(matched_build_df.index)
 
@@ -71,11 +73,12 @@ def getBuildIntervalForClusters(sess_with_labels_dict):
     return high_grp, low_grp
 
 
-def getBuildPassRatioForClusters(sess_with_labels_dict):
+def getBuildPassRatioForClusters(sess_with_labels_dict, valid_sess_p):
     build_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_BUILD_CONTENT.csv'
     build_df   = pd.read_csv(build_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_build_df = build_df[build_df['SESS_ID']==sess_id]
         build_event_cnt = len(matched_build_df.index)
         build_res_as_list  = matched_build_df['BUILD_RES'].tolist()
@@ -96,14 +99,21 @@ def getBuildPassRatioForClusters(sess_with_labels_dict):
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
     print '='*100
-    high_count = 0
+    high_count, low_count = 0, 0
     final_sess_with_labels = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/edit_mining/SESSION.LABELS.DUMP', 'rb' ) )
-    for index_key, cluster_label in final_sess_with_labels.iteritems():
+    '''
+    TO handle filtered sessions absed on duration
+    '''
+    valid_sess = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/VALID.SESSION.IDS.LIST', 'rb'))
+    for sessID, cluster_label in final_sess_with_labels.iteritems():
+      if sessID in valid_sess:
         if cluster_label==1:
             high_count += 1
-    print 'Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
+        else:
+            low_count +=  1
+    print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(high_count + low_count, high_count, low_count)
     print '='*50
-    h_grp_build_cnt, l_grp_build_cnt = getBuildCountForClusters(final_sess_with_labels)
+    h_grp_build_cnt, l_grp_build_cnt = getBuildCountForClusters(final_sess_with_labels, valid_sess)
     total_build_cnt = sum(h_grp_build_cnt) + sum(l_grp_build_cnt)
     print 'TOTAL BUILD EVENT COUNT: {}, HIGH BUILD EVENT COUNT:{}, LOW BUILD EVENT COUNT:{}'.format(total_build_cnt, sum(h_grp_build_cnt), sum(l_grp_build_cnt))
     print '='*50
@@ -113,14 +123,14 @@ if __name__=='__main__':
     print '='*50
     utils.compareTwoGroups(h_grp_build_cnt, l_grp_build_cnt, 'BUILD_COUNT')
     print '='*50
-    h_grp_build_int, l_grp_build_int = getBuildIntervalForClusters(final_sess_with_labels)
+    h_grp_build_int, l_grp_build_int = getBuildIntervalForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_build_int, 'H_BUILD_INTERVAL.csv')
     dumpValuesToFile(l_grp_build_int, 'L_BUILD_INTERVAL.csv')
     print 'Build interval (seconds) data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_build_int, l_grp_build_int, 'NORM_BUILD_INTERVAL')
     print '='*50
-    h_grp_build_pass, l_grp_build_pass = getBuildPassRatioForClusters(final_sess_with_labels)
+    h_grp_build_pass, l_grp_build_pass = getBuildPassRatioForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_build_pass, 'H_BUILD_PASS_RATIO.csv')
     dumpValuesToFile(l_grp_build_pass, 'L_BUILD_PASS_RATIO.csv')
     print 'Build pass ratio data extracted ...'

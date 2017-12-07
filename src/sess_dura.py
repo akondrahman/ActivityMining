@@ -63,5 +63,4 @@ if __name__=='__main__':
   file_name  = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
   all_sess_dur =getSessionDuration(file_name) ### all_sess_dur is a datgrame where duration is measured in seconds
   cutoff = 600.0 # 600 seconds = 10 minutes,
-  # cutoff = 300.0 # 300 seconds = 5 minutes,
   dumpValidSessions(cutoff, all_sess_dur)

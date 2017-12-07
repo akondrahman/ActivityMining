@@ -32,11 +32,12 @@ def dumpValuesToFile(list_param, file2save):
     print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
     return os_bytes
 
-def getDebugCountForClusters(sess_with_labels_dict):
+def getDebugCountForClusters(sess_with_labels_dict, valid_sess_p):
     debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
     debug_df      = pd.read_csv(debug_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
         #debug_event_cnt = len(matched_debug_df.index)
         # need to filter out debug actions that occur for exceptions
@@ -48,11 +49,12 @@ def getDebugCountForClusters(sess_with_labels_dict):
            low_grp.append(debug_event_cnt)
     return high_grp, low_grp
 
-def getDebugIntervalForClusters(sess_with_labels_dict):
+def getDebugIntervalForClusters(sess_with_labels_dict, valid_sess_p):
     debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
     debug_df      = pd.read_csv(debug_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
         # need to filter out debug actions that occur for exceptions
         non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
@@ -98,11 +100,12 @@ def getNormalizedDebugReason(list_):
     return finalDict
 
 
-def getDebugReasonsForClusters(sess_with_labels_dict):
+def getDebugReasonsForClusters(sess_with_labels_dict, valid_sess_p):
     debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
     debug_df      = pd.read_csv(debug_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
         # need to filter out debug actions that occur for exceptions
         non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
@@ -119,11 +122,12 @@ def getDebugReasonsForClusters(sess_with_labels_dict):
     l_d_dist_dict = getNormalizedDebugReason(low_grp)
     return h_d_dist_dict, l_d_dist_dict
 
-def getDebugStepCountForClusters(sess_with_labels_dict):
+def getDebugStepCountForClusters(sess_with_labels_dict, valid_sess_p):
     debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
     debug_df      = pd.read_csv(debug_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
         # need to filter out debug actions that occur for exceptions
         non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
@@ -143,11 +147,12 @@ def getDebugStepCountForClusters(sess_with_labels_dict):
     return high_grp, low_grp
 
 
-def getDebugStepIntervalForClusters(sess_with_labels_dict):
+def getDebugStepIntervalForClusters(sess_with_labels_dict, valid_sess_p):
     debug_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_DEBUG_CONTENT.csv'
     debug_df      = pd.read_csv(debug_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_debug_df = debug_df[debug_df['SESS_ID']==sess_id]
         # need to filter out debug actions that occur for exceptions
         non_exception_debug_df = matched_debug_df[matched_debug_df['ACTION']=='dbgExecutionActionDefault']
@@ -188,7 +193,7 @@ if __name__=='__main__':
     TO handle filtered sessions absed on duration
     '''
     valid_sess = pickle.load( open('/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/dataset/VALID.SESSION.IDS.LIST', 'rb'))
-    for index_key, cluster_label in final_sess_with_labels.iteritems():
+    for sessID, cluster_label in final_sess_with_labels.iteritems():
       if sessID in valid_sess:
         if cluster_label==1:
             high_count += 1
@@ -196,7 +201,7 @@ if __name__=='__main__':
             low_count +=  1
     print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(high_count + low_count, high_count, low_count)
     print '='*50
-    h_grp_d_cnt, l_grp_d_cnt = getDebugCountForClusters(final_sess_with_labels)
+    h_grp_d_cnt, l_grp_d_cnt = getDebugCountForClusters(final_sess_with_labels, valid_sess)
     total_debug_event_cnt = sum(h_grp_d_cnt) + sum(l_grp_d_cnt)
     dumpValuesToFile(h_grp_d_cnt, 'H_DEBUG_COUNT.csv')
     dumpValuesToFile(l_grp_d_cnt, 'L_DEBUG_COUNT.csv')
@@ -206,21 +211,21 @@ if __name__=='__main__':
     print '='*50
     utils.compareTwoGroups(h_grp_d_cnt, l_grp_d_cnt, 'DEBUG_COUNT')
     print '='*50
-    h_grp_debug_int, l_grp_debug_int = getDebugIntervalForClusters(final_sess_with_labels)
+    h_grp_debug_int, l_grp_debug_int = getDebugIntervalForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_debug_int, 'H_DEBUG_INTERVAL.csv')
     dumpValuesToFile(l_grp_debug_int, 'L_DEBUG_INTERVAL.csv')
     print 'Debug interval (seconds) data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_debug_int, l_grp_debug_int, 'NORM_DEBUG_INTERVAL')
     print '='*50
-    h_dist_dict, l_dist_dict = getDebugReasonsForClusters(final_sess_with_labels)
+    h_dist_dict, l_dist_dict = getDebugReasonsForClusters(final_sess_with_labels, valid_sess)
     print 'HIGH (NUMBERS ARE IN %):'
     print h_dist_dict
     print '-'*50
     print 'LOW (NUMBERS ARE IN %):'
     print l_dist_dict
     print '-'*50
-    h_debug_step_cnt, l_debug_step_cnt = getDebugStepCountForClusters(final_sess_with_labels)
+    h_debug_step_cnt, l_debug_step_cnt = getDebugStepCountForClusters(final_sess_with_labels, valid_sess)
     print 'Debug step count data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_debug_step_cnt, l_debug_step_cnt, 'DEBUG_STEP_COUNT')
@@ -228,7 +233,7 @@ if __name__=='__main__':
     dumpValuesToFile(l_debug_step_cnt, 'L_DEBUG_COUNT.csv')
     print 'Debug step count data extracted ...'
     print '='*50
-    h_grp_debug_step_int, l_grp_debug_step_int = getDebugStepIntervalForClusters(final_sess_with_labels)
+    h_grp_debug_step_int, l_grp_debug_step_int = getDebugStepIntervalForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_debug_step_int, 'H_DEBUG_STEP_INTERVAL.csv')
     dumpValuesToFile(l_grp_debug_step_int, 'L_DEBUG_STEP_INTERVAL.csv')
     print 'Debug step interval (seconds) data extracted ...'

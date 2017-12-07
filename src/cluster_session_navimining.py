@@ -30,11 +30,12 @@ def dumpValuesToFile(list_param, file2save):
     print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
     return os_bytes
 
-def getNavigationCountForClusters(sess_with_labels_dict):
+def getNavigationCountForClusters(sess_with_labels_dict, valid_sess_p):
     navi_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_NAVIGATION_CONTENT.csv'
     navi_df      = pd.read_csv(navi_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_navi_df = navi_df[navi_df['SESS_ID']==sess_id]
         navi_event_cnt = len(matched_navi_df.index)
         if sess_label==1:
@@ -43,11 +44,12 @@ def getNavigationCountForClusters(sess_with_labels_dict):
            low_grp.append(navi_event_cnt)
     return high_grp, low_grp
 
-def getNavigationIntervalForClusters(sess_with_labels_dict):
+def getNavigationIntervalForClusters(sess_with_labels_dict, valid_sess_p):
     navi_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_NAVIGATION_CONTENT.csv'
     navi_df      = pd.read_csv(navi_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_navi_df = navi_df[navi_df['SESS_ID']==sess_id]
         navi_event_cnt = len(matched_navi_df.index)
 
@@ -90,12 +92,13 @@ def getNormalizedNavType(list_):
             finalDict[type_] = percentage
     return finalDict
 
-def getNavigationTypesForClusters(sess_with_labels_dict):
+def getNavigationTypesForClusters(sess_with_labels_dict, valid_sess_p):
     navi_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_NAVIGATION_CONTENT.csv'
     navi_df      = pd.read_csv(navi_ds_path)
     high_grp, low_grp = [], []
     dict2Ret = {}
     for sess_id, sess_label in sess_with_labels_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_navi_df = navi_df[navi_df['SESS_ID']==sess_id]
         navi_event_cnt = len(matched_navi_df.index)
         navi_types = matched_navi_df['TYPE'].tolist()
@@ -129,7 +132,7 @@ if __name__=='__main__':
             low_count +=  1
     print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(high_count + low_count, high_count, low_count)
     print '='*50
-    h_grp_n_cnt, l_grp_n_cnt = getNavigationCountForClusters(final_sess_with_labels)
+    h_grp_n_cnt, l_grp_n_cnt = getNavigationCountForClusters(final_sess_with_labels, valid_sess)
     total_navi_event_cnt = sum(h_grp_n_cnt) + sum(l_grp_n_cnt)
     dumpValuesToFile(h_grp_n_cnt, 'H_NAVI_COUNT.csv')
     dumpValuesToFile(l_grp_n_cnt, 'L_NAVI_COUNT.csv')
@@ -139,14 +142,14 @@ if __name__=='__main__':
     print '='*50
     utils.compareTwoGroups(h_grp_n_cnt, l_grp_n_cnt, 'NAVI_COUNT')
     print '='*50
-    h_grp_navi_int, l_grp_navi_int = getNavigationIntervalForClusters(final_sess_with_labels)
+    h_grp_navi_int, l_grp_navi_int = getNavigationIntervalForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_navi_int, 'H_NAVI_INTERVAL.csv')
     dumpValuesToFile(l_grp_navi_int, 'L_NAVI_INTERVAL.csv')
     print 'Navigation interval (seconds) data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_navi_int, l_grp_navi_int, 'NORM_NAVI_INTERVAL')
     print '='*50
-    h_dist_dict, l_dist_dict = getNavigationTypesForClusters(final_sess_with_labels)
+    h_dist_dict, l_dist_dict = getNavigationTypesForClusters(final_sess_with_labels, valid_sess)
     print 'HIGH (NUMBERS ARE IN %):'
     print h_dist_dict
     print '-'*50

@@ -95,11 +95,12 @@ def dumpValuesToFile(list_param, file2save):
     print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
     return os_bytes
 
-def getEditCountForClusters(sess_dict):
+def getEditCountForClusters(sess_dict, valid_sess_p):
     edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
     edit_df   = pd.read_csv(edit_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
         edit_cnt = len(matched_edit_df.index)
         if sess_label==1:
@@ -108,11 +109,12 @@ def getEditCountForClusters(sess_dict):
            low_grp.append(edit_cnt)
     return high_grp, low_grp
 
-def getEditIntervalForClusters(sess_dict):
+def getEditIntervalForClusters(sess_dict, valid_sess_p):
     edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
     edit_df   = pd.read_csv(edit_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
         matched_edit_df = matched_edit_df.sort_values(['TIME'])
         matched_edit_df['FORMATTED_TS'] = matched_edit_df['TIME'].apply(makeTimeHuman)
@@ -136,11 +138,12 @@ def getEditIntervalForClusters(sess_dict):
 
     return high_grp, low_grp
 
-def getEditSizeForClusters(sess_dict):
+def getEditSizeForClusters(sess_dict, valid_sess_p):
     edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
     edit_df   = pd.read_csv(edit_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_edit_df = edit_df[edit_df['SESS_ID']==sess_id]
         edit_event_cnt = len(matched_edit_df.index)
         medi_edit_size = np.median(matched_edit_df['CNG_SIZE'].tolist())
@@ -153,11 +156,12 @@ def getEditSizeForClusters(sess_dict):
     return high_grp, low_grp
 
 
-def getEditLOCACHNGForClusters(sess_dict):
+def getEditLOCACHNGForClusters(sess_dict, valid_sess_p):
     edit_ds_path = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_EDIT_CONTENT.csv'
     edit_df   = pd.read_csv(edit_ds_path)
     high_grp, low_grp = [], []
     for sess_id, sess_label in sess_dict.iteritems():
+      if sess_id in valid_sess_p:
         matched_edit_df   = edit_df[edit_df['SESS_ID']==sess_id]
         edit_event_cnt    = len(matched_edit_df.index)
         medi_edit_loc_cng = np.median(matched_edit_df['CNG_CNT'].tolist())
@@ -169,11 +173,12 @@ def getEditLOCACHNGForClusters(sess_dict):
            low_grp.append(norm_edit_loc_cng)
     return high_grp, low_grp
 
-def getMethCntAllSessions(datafile_path, sess_dict_p):
+def getMethCntAllSessions(datafile_path, sess_dict_p, valid_sess_p):
     high_grp, low_grp = [], []
     meth_df   = pd.read_csv(datafile_path)
 
     for sess_id, sess_label in sess_dict_p.iteritems():
+      if sess_id in valid_sess_p:
         matched_meth_df   = meth_df[meth_df['SESS_ID']==sess_id]
         matched_meth_cnt  = len(matched_meth_df.index)
 
@@ -215,34 +220,34 @@ if __name__=='__main__':
 
     print 'Labeling completed for {} sessions'.format(len(final_sess_with_labels))
     print '='*50
-    h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels)
+    h_grp_edit_cnt, l_grp_edit_cnt = getEditCountForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_edit_cnt, 'H_EDIT_COUNT.csv')
     dumpValuesToFile(l_grp_edit_cnt, 'L_EDIT_COUNT.csv')
     print 'Edit count data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_cnt, l_grp_edit_cnt, 'EDIT_COUNT')
     print '='*50
-    h_grp_edit_inte, l_grp_edit_inte = getEditIntervalForClusters(final_sess_with_labels)
+    h_grp_edit_inte, l_grp_edit_inte = getEditIntervalForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_edit_inte, 'H_NORM_EDIT_INTERVAL.csv')
     dumpValuesToFile(l_grp_edit_inte, 'L_NORM_EDIT_INTERVAL.csv')
     print 'Normalized median edit interval (seconds) data extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_inte, l_grp_edit_inte, 'NORM_EDIT_INTERVAL')
     print '='*50
-    h_grp_edit_size, l_grp_edit_size = getEditSizeForClusters(final_sess_with_labels)
+    h_grp_edit_size, l_grp_edit_size = getEditSizeForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_edit_size, 'H_NORM_EDIT_SIZE.csv')
     dumpValuesToFile(l_grp_edit_size, 'L_NORM_EDIT_SIZE.csv')
     print 'Normalized median edit size extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_size, l_grp_edit_size, 'NORM_EDIT_SIZE')
-    h_grp_edit_loc_chng, l_grp_edit_loc_chng = getEditLOCACHNGForClusters(final_sess_with_labels)
+    h_grp_edit_loc_chng, l_grp_edit_loc_chng = getEditLOCACHNGForClusters(final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_edit_loc_chng, 'H_NORM_EDIT_LOC_CHNG.csv')
     dumpValuesToFile(l_grp_edit_loc_chng, 'L_NORM_EDIT_LOC_CHNG.csv')
     print 'Normalized median edit location-changes extracted ...'
     print '='*50
     utils.compareTwoGroups(h_grp_edit_loc_chng, l_grp_edit_loc_chng, 'NORM_EDIT_LOC_CHNG')
     print '='*50
-    h_grp_met_cnt, l_grp_met_cnt = getMethCntAllSessions(file_path, final_sess_with_labels)
+    h_grp_met_cnt, l_grp_met_cnt = getMethCntAllSessions(file_path, final_sess_with_labels, valid_sess)
     dumpValuesToFile(h_grp_met_cnt, 'H_METH_CNT.csv')
     dumpValuesToFile(l_grp_met_cnt, 'L_METH_CNT.csv')
     print 'Method count per session extracted ...'
