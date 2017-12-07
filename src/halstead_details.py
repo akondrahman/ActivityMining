@@ -53,13 +53,53 @@ def getHalstedDetails():
        per_sess_med_dif, per_sess_med_vol, per_sess_med_pcnt = np.median(per_sess_difficulty), np.median(per_sess_volume), np.median(per_sess_param_cnt)
        per_sess_ = (sessID, per_sess_med_dif, per_sess_med_vol, per_sess_med_pcnt)
        all_sess_data.append(per_sess_)
-   df_ = pd.DataFrame.from_records(all_sess_data, columns=['SESSID', 'DIFF', 'VOLU', 'PARA'])
+   df_ = pd.DataFrame.from_records(all_sess_data, columns=['SESS_ID', 'DIFF', 'VOLU', 'PARA'])
    # print df_.head()
    ### Summary of all data
    print df_.describe()
    return df_
 
+def dumpValuesToFile(list_param, file2save):
+    str2write = ''
+    for elem in list_param:
+        str2write = str2write + str(elem) + ',' + '\n'
+    feature_name = file2save.split('.')[0]
+    str2write = feature_name + ',' + '\n' + str2write
+    os_bytes = utils.dumpContentIntoFile(str2write, file2save)
+    print 'DUMPED A FILE OF {} BYTES'.format(os_bytes)
+    return os_bytes
 
+
+def compareHalsteadMetrics(df_, dict_):
+    hig_dif, low_dif = [], []
+    hig_vol, low_vol = [], []
+    hig_pct, low_pct = [], []
+    for sess_id, sess_label in dict_.iteritems():
+        matched_df = df_[df_['SESS_ID']==sess_id]
+        dif = np.median(matched_df['DIFF'].tolist())
+        vol = np.median(matched_df['VOLU'].tolist())
+        if sess_label == 1 :
+            hig_dif.append(dif)
+            hig_vol.append(vol)
+        else:
+            low_dif.append(dif)
+            low_vol.append(vol)
+    ### COMAPRE DIFFUICLYT
+    utils.compareTwoGroups(hig_dif, low_dif, 'HALSTEAD:DIFFICULTY')
+    dumpValuesToFile(hig_dif, 'H_DIFF.csv')
+    dumpValuesToFile(low_dif, 'L_DIFF.csv')
+    print '*'*25
+    ### COMAPRE VOLUME
+    utils.compareTwoGroups(hig_vol, low_vol, 'HALSTEAD:VOLUME')
+    dumpValuesToFile(hig_dif, 'H_VOLU.csv')
+    dumpValuesToFile(low_dif, 'L_VOLU.csv')
+    print '*'*25
+
+    ### COMAPRE PARTAMETR COUT
+    utils.compareTwoGroups(hig_vol, low_vol, 'HALSTEAD:VOLUME')
+    dumpValuesToFile(hig_dif, 'H_VOLU.csv')
+    dumpValuesToFile(low_dif, 'L_VOLU.csv')
+    print '*'*25
 
 if __name__=='__main__':
     print "Started at:", utils.giveTimeStamp()
@@ -71,5 +111,6 @@ if __name__=='__main__':
             high_count += 1
     print '[SESSIONS] Total:{}, High:{}, Low:{}'.format(len(final_sess_with_labels), high_count, len(final_sess_with_labels) - high_count)
     print '='*50
-    getHalstedDetails()
+    df_halstead  = getHalstedDetails()
     print '='*50
+    compareHalsteadMetrics(df_halstead, final_sess_with_labels)
