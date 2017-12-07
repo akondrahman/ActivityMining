@@ -47,6 +47,21 @@ def getSessionDuration(file_path):
    print dura_df_.describe()
    return dura_df_
 
+def dumpValidSessions(cutoff_, df_):
+   validSessIDs = []
+   allSessIDs = np.unique(df_['SESS_ID'].tolist())
+   print 'UNIQUE SESSION COUNT BEFORE FILTERING:', len(allSessIDs)
+   print '-'*50
+   for sessID in allSessIDs:
+       per_sess_df = df_[df_['SESS_ID']==sessID]
+       per_sess_dura = getDuration(per_sess_df)
+       if(per_sess_dura >= cutoff_):
+          validSessIDs.append(sessID)
+   pickle.dump( validSessIDs, open( "VALID.SESSION.IDS.LIST", "wb" ) )
+   print 'UNIQUE SESSION COUNT AFTER FILTERING:', len(validSessIDs)
+
 if __name__=='__main__':
   file_name  = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/REDUCED_ALL_COMMAND_CONTENT.csv'
   all_sess_dur =getSessionDuration(file_name) ### all_sess_dur is a datgrame where duration is measured in seconds
+  cutoff = 600.0 # 600 seconds = 10 minutes
+  dumpValidSessions(cutoff, all_sess_dur)
