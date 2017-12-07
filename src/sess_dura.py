@@ -33,7 +33,7 @@ def getDuration(df_param):
 def getSessionDuration(file_path):
    all_dur = []
    full_df   = pd.read_csv(file_path)
-   allSessIDs = np.unique(df2ret['SESS_ID'].tolist())
+   allSessIDs = np.unique(full_df['SESS_ID'].tolist())
    print '='*50
    print 'UNIQUE SESSION COUNT:', len(allSessIDs)
    print '-'*50
@@ -48,5 +48,5 @@ def getSessionDuration(file_path):
    return dura_df_
 
 if __name__=='__main__':
-  file_name  = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/LOCKED_ALL_COMMAND_CONTENT.csv'
+  file_name  = '/Users/akond/Documents/AkondOneDrive/MSR18-MiningChallenge/output/datasets/REDUCED_ALL_COMMAND_CONTENT.csv'
   all_sess_dur =getSessionDuration(file_name) ### all_sess_dur is a datgrame where duration is measured in seconds
