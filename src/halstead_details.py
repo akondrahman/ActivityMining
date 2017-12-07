@@ -78,12 +78,15 @@ def compareHalsteadMetrics(df_, dict_):
         matched_df = df_[df_['SESS_ID']==sess_id]
         dif = np.median(matched_df['DIFF'].tolist())
         vol = np.median(matched_df['VOLU'].tolist())
+        pct = np.median(matched_df['PARA'].tolist())
         if sess_label == 1 :
             hig_dif.append(dif)
             hig_vol.append(vol)
+            hig_pct.append(pct)
         else:
             low_dif.append(dif)
             low_vol.append(vol)
+            low_pct.append(pct)
     ### COMAPRE DIFFUICLYT
     utils.compareTwoGroups(hig_dif, low_dif, 'HALSTEAD:DIFFICULTY')
     dumpValuesToFile(hig_dif, 'H_DIFF.csv')
