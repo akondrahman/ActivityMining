@@ -1,5 +1,5 @@
 const BigQuery = require('@google-cloud/bigquery');
-
+var fs = require('fs');
 
 const projectId = "githubsolidityquery";
 const sqlQuery = 'SELECT * FROM `LOL.SO_GH_IDS`' ; 
@@ -18,6 +18,8 @@ const options = {
 };
 
 let job;
+var fullData = '' ;
+var out_fil  = 'OUT_FIL_GH_DAT.csv'
 
 bigquery
   .createQueryJob(options)
@@ -43,8 +45,28 @@ bigquery
   })
   .then(results => {
     const rows = results[0];
-    console.log('Rows:');
-    rows.forEach(row => console.log(row['Path']));
+    index = 0 ; 
+    rows.forEach(function(row_as_json){
+      //console.log(row_as_json);
+      fileID = row_as_json['FileId'];
+      repo   = row_as_json['RepoName'];
+      branch = row_as_json['Branch'];
+      postID = row_as_json['PostId'] ; 
+      ghURL  = row_as_json['GHUrl'] ;
+      
+      data   = index.toString() + ',' + repo + ',' + branch + ',' + postID.toString() + ',' + ghURL + '\n' ;
+      fullData = fullData + data ; 
+      //console.log(fullData) ;
+      index  += 1 ;
+    });
+
+    fs.writeFile(out_fil, fullData, function(err) {
+    if(err) {
+        return console.log(err);
+    }
+        console.log("File dumped succesfully ... ");
+    }); 
+
   })
   .catch(err => {
     console.error('ERROR:', err);
