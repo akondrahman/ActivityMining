@@ -35,9 +35,12 @@ def getTitle(html_data):
 
 def getUniquePostDetails(df_):
     out_dict = {}
+    process_cnt = 0 
     uni_post_IDs = np.unique(df_['sopostID'].tolist())
     for postID in uni_post_IDs:
+        try:
             full_url  = 'https://stackoverflow.com/questions/' + str(postID) + '/'
+            print 'Processing:{}, count:{}'.format(  full_url, process_cnt )
             response_ = urllib2.urlopen(full_url)
             html_dump = response_.read()
             parsed_html    = BeautifulSoup(html_dump)
@@ -45,6 +48,9 @@ def getUniquePostDetails(df_):
             title          = getTitle(parsed_html)    
             if postID not in out_dict: 
                 out_dict[postID] = (title, code_snippets)    
+            process_cnt += 1
+        except urllib2.HTTPError:
+            pickle.dump( out_dict, open( str(process_cnt) + '.GH.PY.SO.TRACKER.PKL', 'wb'))          
     return out_dict
 
 def getPostDetails(df_, py_out_dir_):
