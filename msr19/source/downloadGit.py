@@ -7,8 +7,10 @@ import os
 import urllib
 import pandas as pd 
 import numpy as np 
+import cPickle as pickle 
 
 def downloadFiles(df_, out_dir_):
+    tracker_dict = {}
     testfile = urllib.URLopener()
     python_file_links =  np.unique( df_['pythonLink'].tolist() )
     cnt, err_cnt = 1, 1
@@ -26,6 +28,14 @@ def downloadFiles(df_, out_dir_):
             print 'So far not downloaded :{} python files'.format(err_cnt)
             err_cnt += 1 
          cnt += 1 
+         '''
+         keep track of IDs so that it can be mapped later on 
+         '''
+         link_specific_df = df_[df_['pythonLink']==link_]
+         if out_fil not in tracker_dict:
+            tracker_dict[out_fil] = link_specific_df
+    pickle.dump( tracker_dict, open( out_dir_ + 'GH.PY.TRACKER.PKL', 'wb' ) )          
+    
 
 if __name__=='__main__':
    the_dat = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/OUT_FIL_GH_DAT.csv'
