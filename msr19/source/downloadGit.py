@@ -21,12 +21,13 @@ def downloadFiles(df_, out_dir_):
          if not os.path.exists(dir_):
             os.makedirs(dir_)
          out_fil   = dir_ + '/' + file2save 
-         try:
-            testfile.retrieve(link_, out_fil)
-            print 'Download completed for:{}, {} processed so far ...'.format(file2save, cnt)
-         except IOError: 
-            print 'So far not downloaded :{} python files'.format(err_cnt)
-            err_cnt += 1 
+         if os.path.exists(out_fil) == False:
+            try:
+                testfile.retrieve(link_, out_fil)
+                print 'Download completed for:{}, {} processed so far ...'.format(file2save, cnt)
+            except IOError: 
+                print 'So far not downloaded :{} python files'.format(err_cnt)
+                err_cnt += 1 
          cnt += 1 
          '''
          keep track of IDs so that it can be mapped later on 
@@ -34,7 +35,7 @@ def downloadFiles(df_, out_dir_):
          link_specific_df = df_[df_['pythonLink']==link_]
          if out_fil not in tracker_dict:
             tracker_dict[out_fil] = link_specific_df
-    pickle.dump( tracker_dict, open( out_dir_ + 'GH.PY.TRACKER.PKL', 'wb' ) )          
+    pickle.dump( tracker_dict, open( out_dir_ + 'GH.PY.TRACKER.PKL', 'wb'))          
     
 
 if __name__=='__main__':
