@@ -33,10 +33,27 @@ def getTitle(html_data):
             title_ = 'NOT_FOUND'            
     return title_    
 
-def getPostDetails(df_, out_dir, py_out_dir_):
-    out_dir = {}
+def getUniquePostDetails(df_):
+    out_dict = {}
+    uni_post_IDs = np.unique(df_['sopostID'].tolist())
+    for postID in uni_post_IDs:
+            full_url  = 'https://stackoverflow.com/questions/' + str(postID) + '/'
+            response_ = urllib2.urlopen(full_url)
+            html_dump = response_.read()
+            parsed_html    = BeautifulSoup(html_dump)
+            code_snippets  = getCode(parsed_html)
+            title          = getTitle(parsed_html)    
+            if postID not in out_dict: 
+                out_dict[postID] = (title, code_snippets)    
+    return out_dict
+
+def getPostDetails(df_, py_out_dir_):
+    uni_post_dict =getUniquePostDetails(df_)
+    out_dic  = {}
+    file_cnt = 0 
     python_file_links =  np.unique( df_['pythonLink'].tolist() )
     for link_ in python_file_links:
+         file_cnt += 1 
          so_post_IDs = df_[df_['pythonLink']==link_]['sopostID'].tolist()
 
          file2save = link_.split('/')[-1]
@@ -46,28 +63,23 @@ def getPostDetails(df_, out_dir, py_out_dir_):
             os.makedirs(dir_)
          out_fil   = dir_ + '/' + file2save 
          post_details = []
-         for postID in so_post_IDs:
-            full_url  = 'https://stackoverflow.com/questions/' + str(postID) + '/'
-            response_ = urllib2.urlopen(full_url)
-            html_dump = response_.read()
-            parsed_html    = BeautifulSoup(html_dump)
-            code_snippets  = getCode(parsed_html)
-            title          = getTitle(parsed_html)
-            # print out_fil, full_url, title
-            # print code_snippets
-            # print '='*50
-            post_details.append((full_url, title, code_snippets))
-         if out_fil not in out_dir:
-           out_dir[out_fil] = post_details
-    return out_dir
+         print 'Processing {}, which has {} posts'.format(link_, len(so_post_IDs))
+         uni_so_post_IDs = np.unique(so_post_IDs)
+         for postID in uni_so_post_IDs:
+             if postID in uni_post_dict:
+                title, code_snippets = uni_post_dict[postID]
+                post_details.append((postID, title, code_snippets))
+         if out_fil not in out_dic:
+           out_dic[out_fil] = post_details
+    return out_dic
 
 
 
 if __name__=='__main__':
    the_dat     = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/OUT_FIL_GH_DAT.csv'
    the_df      = pd.read_csv(the_dat)
-   out_dir     = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/so_code_snippets/'
+   out_dir     = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/'
    py_out_dir  = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/python_files/'
    
-   post_gh_dic = getPostDetails(the_df, out_dir, py_out_dir) 
+   post_gh_dic = getPostDetails(the_df, py_out_dir) 
    pickle.dump( post_gh_dic, open( out_dir + 'GH.PY.SO.TRACKER.PKL', 'wb'))          
