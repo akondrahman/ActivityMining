@@ -2,7 +2,14 @@ const BigQuery = require('@google-cloud/bigquery');
 var fs = require('fs');
 
 const projectId = "githubsolidityquery";
-const sqlQuery = 'SELECT * FROM `LOL.SO_GH_PYTHON_POST_ID_TITLE_BODY`' ; 
+
+// const sqlQuery = 'SELECT * FROM `LOL.SO_GH_PYTHON_QUES_DETAILS`' ; 
+// const sqlQuery = 'SELECT * FROM `LOL.SO_GH_PYTHON_ACC_ANS_DETAILS`' ; 
+const sqlQuery = 'SELECT * FROM `LOL.SO_GH_PYTHON_ANS_DETAILS`' ; 
+
+// var out_fil  = 'SO_GH_PY_QUES_DETAILS.txt'
+// var out_fil  = 'SO_GH_PY_ACC_ANS_DETAILS.txt'
+var out_fil = 'SO_GH_PYTHON_ANS_DETAILS.txt'
 
 const bigquery = new BigQuery({
   projectId: projectId,
@@ -11,7 +18,7 @@ const bigquery = new BigQuery({
 
 });
 
-// Query options list: https://cloud.google.com/bigquery/docs/reference/v2/jobs/query
+
 const options = {
   query: sqlQuery,
   useLegacySql: false, 
@@ -19,7 +26,7 @@ const options = {
 
 let job;
 var fullData = '' ;
-var out_fil  = 'OUT_ SO_GH_PYTHON_POST_ID_TITLE_BODY_DAT.txt'
+
 
 bigquery
   .createQueryJob(options)
@@ -48,10 +55,35 @@ bigquery
       postID      = row_as_json['Id'];
       postTitle   = row_as_json['Title'];
       postBody    = row_as_json['Body'];
+      postScore   = row_as_json['Score'];
+      postViews   = row_as_json['ViewCount'];
+      postAnswers = row_as_json['AnswerCount'];
+      postComments= row_as_json['CommentCount'];
+      postFavs    = row_as_json['FavoriteCount'];   
+      //postAccID   = row_as_json['AcceptedAnswerId'];
+      postAccID   = row_as_json['ParentId'];
+      
+      if (postViews == null)
+      {
+        postViews = 0  // 0 means no favorites 
+      }
+      if (postAnswers == null)
+      {
+        postAnswers = 0 // 0 means no accepted answer ID 
+      }      
+      if (postFavs == null)
+      {
+        postFavs = 0  // 0 means no favorites 
+      }
+      if (postAccID == null)
+      {
+          postAccID = 0 // 0 means no accepted answer ID 
+      }
+
 
       postTitle   = postTitle.replace(/;/g, ' ') 
       postTitle   = postTitle.replace(/,/g, ' ') 
-
+      
       postBody    = postBody.replace(/,/g, ' ')
       postBody    = postBody.replace(/#/g, ' ')      
       postBody    = postBody.replace(/&/g, ' ')      
@@ -59,7 +91,7 @@ bigquery
       postBody    = postBody.replace(/\n/g, ' ')            
       postBody    = postBody.replace(/=/g, ' ')      
       
-      data   = postID.toString() + ',' + postTitle + ',' + postBody +  '\n' ;
+      data   = postID.toString() + ',' + postTitle + ',' + postBody  + ',' + postScore.toString() + ',' + postViews.toString() + ',' + postAnswers.toString() + ',' + postComments.toString() + ',' + postFavs.toString() + ',' + postAccID.toString() + '\n' ;
       fullData = fullData + data ; 
     });
 
@@ -67,7 +99,7 @@ bigquery
     if(err) {
         return console.log(err);
     }
-        console.log("File dumped succesfully ... ");
+        console.log("SO+GH+ANSWER data dumped succesfully ... ");
     }); 
 
   })

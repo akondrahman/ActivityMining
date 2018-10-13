@@ -1,10 +1,10 @@
-// To download all post to GH mappings for Python only  
+// To download all post to GH mappings for all languages 
 
 const BigQuery = require('@google-cloud/bigquery');
 var fs = require('fs');
 
 const projectId = "githubsolidityquery";
-const sqlQuery = 'SELECT * FROM `LOL.SO_GH_IDS`' ; 
+const sqlQuery = 'SELECT * FROM `LOL.SO_GH_DATA_FILTERED`' ; 
 
 const bigquery = new BigQuery({
   projectId: projectId,
@@ -21,7 +21,7 @@ const options = {
 
 let job;
 var fullData = '' ;
-var out_fil  = 'PYTHON_OUT_FIL_GH_DAT.csv'
+var out_fil  = 'OUT_SO_GH_DATA_FILTERED.csv'
 
 bigquery
   .createQueryJob(options)
@@ -31,11 +31,9 @@ bigquery
     return job.promise();
   })
   .then(() => {
-    // Get the job's status
     return job.getMetadata();
   })
   .then(metadata => {
-    // Check the job's status for errors
     const errors = metadata[0].status.errors;
     if (errors && errors.length > 0) {
       throw errors;
@@ -47,26 +45,22 @@ bigquery
   })
   .then(results => {
     const rows = results[0];
-    index = 0 ; 
     rows.forEach(function(row_as_json){
       //console.log(row_as_json);
-      fileID = row_as_json['FileId'];
-      repo   = row_as_json['RepoName'];
-      branch = row_as_json['Branch'];
-      postID = row_as_json['PostId'] ; 
-      ghURL  = row_as_json['GHUrl'] ;
+      postID      = row_as_json['PostId'];
+      repoName    = row_as_json['RepoName'];
+
+
       
-      data   = index.toString() + ',' + repo + ',' + branch + ',' + postID.toString() + ',' + ghURL + '\n' ;
+      data   = postID.toString() + ',' + repoName  +  '\n' ;
       fullData = fullData + data ; 
-      //console.log(fullData) ;
-      index  += 1 ;
     });
 
     fs.writeFile(out_fil, fullData, function(err) {
     if(err) {
         return console.log(err);
     }
-        console.log("Python only SO+GH data  dumped succesfully ... ");
+        console.log("SO+GH data dumped succesfully ... ");
     }); 
 
   })
