@@ -38,11 +38,11 @@ insecure_cipher_list = ['Crypto.Cipher.ARC2.new', 'Crypto.Cipher.ARC4.new', 'Cry
 'Crypto.Cipher.DES.new', 'Crypto.Cipher.XOR.new', 'cryptography.hazmat.primitives.ciphers.algorithms.ARC4', 'cryptography.hazmat.primitives.ciphers.algorithms.Blowfish', 
 'cryptography.hazmat.primitives.ciphers.algorithms.IDEA', 'cryptography.hazmat.primitives .ciphers.modes.ECB']
 xss_scripting_list =  ['django.utils.safestring.mark_safe']
-insecure_func_list = ['tempfile.mktemp', 'eval', 'httplib.HTTPSConnection', 'http.client.HTTPSConnection', 'six.moves.http_client.HTTPSConnection', 'telnetlib.*', 'input']
+insecure_func_list = ['tempfile.mktemp', 'eval', 'httplib.HTTPSConnection', 'http.client.HTTPSConnection', 'six.moves.http_client.HTTPSConnection', 'telnetlib.*', 'input', 'mktemp']
 url_list = ['urllib.urlopen', 'urllib.request.urlopen', 'urllib.urlretrieve', 'urllib.request.urlretrieve',
 'urllib.URLopener', 'urllib.request.URLopener', 'urllib.FancyURLopener', 'urllib.request.FancyURLopener', 'urllib2.urlopen',
 'urllib2.Request', 'six.moves.urllib.request.urlopen', 'six.moves.urllib.request.urlretrieve', 'six.moves.urllib.request .URLopener', 
-'six.moves.urllib.request.FancyURLopener']
+'six.moves.urllib.request.FancyURLopener', 'urlopen', 'urlretrieve']
 random_list = ['random.random', 'random.randrange', 'random.randint', 'random.choice', 'random.uniform', 'random.triangular']
 xml_list = ['xml.etree.cElementTree.parse', 'xml.etree.cElementTree.iterparse', 'xml.etree.cElementTree.fromstring', 
 'xml.etree.cElementTree.XMLParser', 'xml.etree.ElementTree.parse', 'xml.etree.ElementTree.iterparse', 'xml.etree.ElementTree.fromstring', 
@@ -87,12 +87,14 @@ def matchSecurityWords(code_str):
 
     return pkl_match_cnt, marshal_match_cnt, hash_match_cnt, cipher_match_cnt, xss_match_cnt, func_match_cnt, url_match_cnt, rand_match_cnt, xml_match_cnt, ftp_match_cnt
 
-
-def matchCode(body_para, bodyID_para):
+def matchCode(body_para):
+    snippets = 0 
     t_pkl_, t_marshal_, t_hash_, t_cipher_, t_xss_, t_func_, t_url_, t_rand_, t_xml_, t_ftp_ = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
     matches_ = re.findall(regex_string , body_para)
+    snippets = snippets + len(matches_)
     for match in matches_:
         internal_matches = re.findall(regex_string, match)
+        snippets = snippets + len(internal_matches)
         for a_match in internal_matches:
             pkl_, marshal_, hash_, cipher_, xss_, func_, url_, rand_, xml_, ftp_ = matchSecurityWords(a_match)
             t_pkl_ = t_pkl_ + pkl_
@@ -107,25 +109,105 @@ def matchCode(body_para, bodyID_para):
             t_ftp_  = t_ftp_ + ftp_
 
             pkl_, marshal_, hash_, cipher_, xss_, func_, url_, rand_, xml_, ftp_ = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
-    return  t_pkl_, t_marshal_, t_hash_, t_cipher_, t_xss_, t_func_, t_url_, t_rand_, t_xml_, t_ftp_ 
+    return  [t_pkl_, t_marshal_, t_hash_, t_cipher_, t_xss_, t_func_, t_url_, t_rand_, t_xml_, t_ftp_, snippets] 
+
+def matchVersionCode(body_para):
+        t_pkl_, t_marshal_, t_hash_, t_cipher_, t_xss_, t_func_, t_url_, t_rand_, t_xml_, t_ftp_ = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+
+        pkl_, marshal_, hash_, cipher_, xss_, func_, url_, rand_, xml_, ftp_ = matchSecurityWords(body_para)
+        t_pkl_ = t_pkl_ + pkl_
+        t_marshal_ = t_marshal_ + marshal_
+        t_hash_ = t_hash_ + hash_
+        t_cipher_ = t_cipher_ + cipher_
+        t_xss_ = t_xss_ + xss_
+        t_func_ = t_func_ + func_
+        t_url_ = t_url_ + url_
+        t_rand_ = t_rand_ + rand_
+        t_xml_ = t_xml_ + xml_
+        t_ftp_  = t_ftp_ + ftp_
+
+        pkl_, marshal_, hash_, cipher_, xss_, func_, url_, rand_, xml_, ftp_ = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+        return  t_pkl_, t_marshal_, t_hash_, t_cipher_, t_xss_, t_func_, t_url_, t_rand_, t_xml_, t_ftp_     
 
 
 def processBody(bodies, full_df):
-    dict_={}
+    list_ = []
+    cnt_ = 0
     for body in bodies:
         body_df = full_df[full_df['Body']==body]
         body_ID = body_df['Id'].tolist()[0] 
-        insecure_tup = matchCode(body, body_ID)
-        print insecure_tup
+        post_ID = body_df['ParentId'].tolist()[0] 
+        createDate = body_df['CreateDate'].tolist()[0] 
+        insecure_tup_with_snippets = matchCode(body)
+        snip_cnt = insecure_tup_with_snippets.pop()
+        insecure_tup = [x_ for x_ in insecure_tup_with_snippets]
+        tot_insecurities = sum(insecure_tup)
+        print body_ID
+        print tot_insecurities,  insecure_tup
+        print '{} left'.format(len(bodies) - cnt_ )
         print '-'*50
-        if body_ID not in dict_:
-           dict_[body_ID] = insecure_tup
-    return dict_
+        x_      = body_df['CreateDate'].tolist()[0] 
+        createDate = x_.split('-')[0] + '-' + x_.split('-')[1]
+
+        list_.append((body_ID, 'TOTAL',   tot_insecurities, post_ID, createDate, snip_cnt))
+        list_.append((body_ID, 'PICKLE',  insecure_tup[0], post_ID, createDate,  snip_cnt))        
+        list_.append((body_ID, 'MARSHAL', insecure_tup[1], post_ID, createDate,  snip_cnt))
+        list_.append((body_ID, 'HASH',    insecure_tup[2], post_ID, createDate,  snip_cnt))         
+        list_.append((body_ID, 'CIPHER',  insecure_tup[3], post_ID, createDate,  snip_cnt))        
+        list_.append((body_ID, 'XSS',     insecure_tup[4], post_ID, createDate,  snip_cnt))
+        list_.append((body_ID, 'FUNC',    insecure_tup[5], post_ID, createDate,  snip_cnt))                        
+        list_.append((body_ID, 'URL',     insecure_tup[6], post_ID, createDate,  snip_cnt))         
+        list_.append((body_ID, 'RAND',    insecure_tup[7], post_ID, createDate,  snip_cnt))        
+        list_.append((body_ID, 'XML',     insecure_tup[8], post_ID, createDate,  snip_cnt))
+        list_.append((body_ID, 'FTP',     insecure_tup[9], post_ID, createDate,  snip_cnt))         
+        cnt_ += 1
+    df_ = pd.DataFrame(list_, columns=['BODY_ID', 'TYPE', 'TYPE_COUNT', 'PARENT_ID', 'MONTH', 'SNIPPET_CNT'])
+    return df_
+
+def processVersionBody(bodies, full_df):
+    list_ = []
+    cnt_ = 0
+    for body in bodies:
+        body_df = full_df[full_df['Body']==body]
+        body_ID = body_df['Id'].tolist()[0] 
+        post_ID = body_df['PostId'].tolist()[0] 
+        insecure_tup = matchVersionCode(body)
+        tot_insecurities = sum(insecure_tup)
+        print body_ID
+        print tot_insecurities,  insecure_tup
+        print '{} left'.format(len(bodies) - cnt_ )
+        print '-'*50
+        x_      = body_df['CreateDate'].tolist()[0] 
+        createDate = x_.split('-')[0] + '-' + x_.split('-')[1]
+        list_.append((body_ID, 'TOTAL',   tot_insecurities, post_ID, createDate))
+        list_.append((body_ID, 'PICKLE',  insecure_tup[0], post_ID, createDate))        
+        list_.append((body_ID, 'MARSHAL', insecure_tup[1], post_ID, createDate))
+        list_.append((body_ID, 'HASH',    insecure_tup[2], post_ID, createDate))         
+        list_.append((body_ID, 'CIPHER',  insecure_tup[3], post_ID, createDate))        
+        list_.append((body_ID, 'XSS',     insecure_tup[4], post_ID, createDate))
+        list_.append((body_ID, 'FUNC',    insecure_tup[5], post_ID, createDate))                        
+        list_.append((body_ID, 'URL',     insecure_tup[6], post_ID, createDate))         
+        list_.append((body_ID, 'RAND',    insecure_tup[7], post_ID, createDate))        
+        list_.append((body_ID, 'XML',     insecure_tup[8], post_ID, createDate))
+        list_.append((body_ID, 'FTP',     insecure_tup[9], post_ID, createDate))         
+        cnt_ += 1
+    df_ = pd.DataFrame(list_, columns=['BODY_ID', 'TYPE', 'COUNT', 'PARENT_ID', 'MONTH'])
+    return df_
 
 
 if __name__=='__main__':
-   ans_dat = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PYTHON_ANS_DETAILS.csv'
+#    ans_dat = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PYTHON_ANS_DETAILS.csv'
+#    out_fil = 'DF_SO_GH_PY_ANS_DETAILS.PKL'
+   
+#    ans_dat = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PY_ACC_ANS_DETAILS.csv'
+#    out_fil = 'DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
+
    ans_df_ = pd.read_csv(ans_dat)
    bodies  = ans_df_['Body'].tolist()
-   full_data_dict = processBody(bodies, ans_df_)
-   pickle.dump( full_data_dict, open( 'SNIPPET_INSECURITY_DICT.PKL', 'wb'))     
+   
+   full_data_df = processBody(bodies, ans_df_)
+   print full_data_df.head()
+   ## for version code 
+   #full_data_dict = processVersionBody(bodies, ans_df_)
+
+   pickle.dump( full_data_df, open( out_fil, 'wb'))     

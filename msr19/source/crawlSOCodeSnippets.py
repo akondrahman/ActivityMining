@@ -10,7 +10,9 @@ import urllib2
 import json 
 import os 
 import cPickle as pickle
+import subprocess
 
+TMP_PY_FILE = 'TMP.py'
 
 def getCode(html_data):
     code_snippets = []
@@ -33,23 +35,42 @@ def getTitle(html_data):
             title_ = 'NOT_FOUND'            
     return title_    
 
+def dumpContentIntoFile(strP, fileP):
+    fileToWrite = open( fileP, 'w')
+    fileToWrite.write(strP)
+    fileToWrite.close()
+    return str(os.stat(fileP).st_size)
+
+'''
+reff: https://api.stackexchange.com/docs/posts-by-ids#order=desc&sort=activity&ids=33287637&filter=default&site=stackoverflow&run=true
+'''
+
 def getUniquePostDetails(df_):
     out_dict = {}
     process_cnt = 0 
-    uni_post_IDs = np.unique(df_['sopostID'].tolist())
+    uni_post_IDs = np.unique(df_['Id'].tolist())
+    print 'Total answers to process:', len(uni_post_IDs)
     for postID in uni_post_IDs:
         try:
-            full_url  = 'https://stackoverflow.com/questions/' + str(postID) + '/'
+            code_snippets = []
+            full_url  = 'https://stackoverflow.com/a/' + str(postID) + '/' ## format: https://stackoverflow.com/a/33287637"
             print 'Processing:{}, count:{}'.format(  full_url, process_cnt )
-            response_ = urllib2.urlopen(full_url)
-            html_dump = response_.read()
-            parsed_html    = BeautifulSoup(html_dump)
+            req = urllib2.Request(full_url) 
+            req.add_header('client_id', '<CLIENT_ID_HERE>') 
+            req.add_header('client_secret', '<SECRET_HERE>') 
+            req.add_header('key', '<KEY_HERE>') 
+            resp = urllib2.urlopen(req,  timeout = 90)
+            content_resp = resp.read()
+            parsed_html    = BeautifulSoup(content_resp)
             code_snippets  = getCode(parsed_html)
-            title          = getTitle(parsed_html)    
-            if postID not in out_dict: 
-                out_dict[postID] = (title, code_snippets)    
+            if postID not in out_dict:
+               out_dict[postID] = code_snippets
             process_cnt += 1
-        except urllib2.HTTPError:
+            pickle.dump( out_dict, open( str(process_cnt) + '.GH.PY.SO.TRACKER.PKL', 'wb'))          
+            print 'Items in dict:{}, code snippets in post:{}'.format( len(out_dict), len(code_snippets) )
+            print '-'*25
+        except urllib2.HTTPError, err_:
+            print 'Error is:',  err_
             pickle.dump( out_dict, open( str(process_cnt) + '.GH.PY.SO.TRACKER.PKL', 'wb'))          
     return out_dict
 
@@ -82,10 +103,12 @@ def getPostDetails(df_, py_out_dir_):
 
 
 if __name__=='__main__':
-   the_dat     = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/OUT_FIL_GH_DAT.csv'
+   the_dat     = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PYTHON_ANS_DETAILS.csv'
    the_df      = pd.read_csv(the_dat)
    out_dir     = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/'
    py_out_dir  = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/python_files/'
+
+   getUniquePostDetails(the_df)
    
-   post_gh_dic = getPostDetails(the_df, py_out_dir) 
-   pickle.dump( post_gh_dic, open( out_dir + 'GH.PY.SO.TRACKER.PKL', 'wb'))          
+#    post_gh_dic = getPostDetails(the_df, py_out_dir) 
+#    pickle.dump( post_gh_dic, open( out_dir + 'GH.PY.SO.TRACKER.PKL', 'wb'))          
