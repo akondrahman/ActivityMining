@@ -65,8 +65,8 @@ if __name__=='__main__':
    Part - 2
    '''
 
-   pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
-   out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
+#    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
+#    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
 
 #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
 #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ACC_ANS_RES.csv'
