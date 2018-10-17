@@ -22,15 +22,15 @@ def compareDists(ls_1, ls_2, type_):
     print 'Pee value:{}, cliffs:{}, type:{}'.format(p, cliffs_delta, type_)
     print '*'*25
 
-def compareAccNonAcc(acc_df, all_df):
+def compareAccNonAcc(acc_df, all_df, field):
     print 'Before: all answer dataframe size:', all_df.shape 
     acc_IDs = acc_df['ID'].tolist()
     reduced_all_df = all_df[~ all_df['ID'].isin(acc_IDs)]
     print 'After: all answer dataframe size:', reduced_all_df.shape 
     types = np.unique( acc_df['TYPE'].tolist() )
     for typ in types:
-        acc_insecure_snippet_list = acc_df[acc_df['TYPE']==typ]['INSECURE_SNIPPET_CNT'].tolist()
-        non_acc_insecure_snippet_list = reduced_all_df[reduced_all_df['TYPE']==typ]['INSECURE_SNIPPET_CNT'].tolist()
+        acc_insecure_snippet_list = acc_df[acc_df['TYPE']==typ][field].tolist()
+        non_acc_insecure_snippet_list = reduced_all_df[reduced_all_df['TYPE']==typ][field].tolist()
 
         compareDists(non_acc_insecure_snippet_list, acc_insecure_snippet_list, typ)
         print '~'*100
@@ -44,4 +44,6 @@ if __name__=='__main__':
    acc_ans_df = pd.read_csv(acc_ans_fil)
    all_ans_df = pd.read_csv(all_ans_fil)
 
-   compareAccNonAcc(acc_ans_df, all_ans_df)
+#    compareAccNonAcc(acc_ans_df, all_ans_df, 'SNIPPET_DENS')
+   
+#    compareAccNonAcc(acc_ans_df, all_ans_df, 'INSECURE_SNIPPET_CNT')

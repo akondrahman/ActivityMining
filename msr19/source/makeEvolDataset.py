@@ -46,6 +46,32 @@ def makeIDDataset(dataframe, out_fil):
     print df_.tail()
     df_.to_csv(out_fil)
 
+def makeInterestDataset(dataframe, out_fil):
+    results = []
+    IDs  = np.unique( dataframe['BODY_ID'].tolist()    )
+    print 'Answers in dataset:', len(IDs)    
+    for ID_ in IDs:
+        ID_df_ = dataframe[dataframe['BODY_ID']==ID_]
+        types  = np.unique(ID_df_['TYPE'].tolist())
+
+        score = np.unique(ID_df_['SCORE'].tolist())[0]
+        view_ = np.unique(ID_df_['VIEW'].tolist())[0]
+        comme = np.unique(ID_df_['COMMENT'].tolist())[0]
+        favor = np.unique(ID_df_['FAVORITE'].tolist())[0]
+        
+        tot_snippets = sum(ID_df_['SNIPPET_CNT'].tolist())
+        if tot_snippets == 0:
+            tot_snippets = tot_snippets + 1
+        for type_ in types:
+            cnt_typ = ID_df_[ID_df_['TYPE']==type_]['TYPE_COUNT'].tolist()
+            snippet_den = round(float(sum(cnt_typ))/float(tot_snippets), 5)
+            
+            results.append((ID_, score, view_, comme, favor, tot_snippets, type_, sum(cnt_typ), snippet_den))
+
+    df_ = pd.DataFrame(results, columns=['ID', 'SCORE', 'VIEW', 'COMMENT', 'FAVORITE', 'TOT_SNIP', 'TYPE', 'INSECURE_SNIPPET_CNT', 'SNIPPET_DENS'])
+    print df_.tail()
+    df_.to_csv(out_fil)
+
 
 if __name__=='__main__':
 #    '''
@@ -61,9 +87,9 @@ if __name__=='__main__':
 #    df_ = pickle.load(open(pkl_fil, 'rb'))
 #    makeEvolDataset(df_, out_fil)
 
-   '''
-   Part - 2
-   '''
+#    '''
+#    Part - 2
+#    '''
 
 #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
 #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
@@ -71,5 +97,15 @@ if __name__=='__main__':
 #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
 #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ACC_ANS_RES.csv'
 
+#    df_ = pickle.load(open(pkl_fil, 'rb'))
+#    makeIDDataset(df_, out_fil)
+
+   '''
+   Part - 3
+   '''
+
+   pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
+   out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/INTEREST_SO_GH_PY_ANS_RES.csv'
+
    df_ = pickle.load(open(pkl_fil, 'rb'))
-   makeIDDataset(df_, out_fil)
+   makeInterestDataset(df_, out_fil)

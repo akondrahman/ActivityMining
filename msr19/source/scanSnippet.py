@@ -138,6 +138,11 @@ def processBody(bodies, full_df):
         body_ID = body_df['Id'].tolist()[0] 
         post_ID = body_df['ParentId'].tolist()[0] 
         createDate = body_df['CreateDate'].tolist()[0] 
+        score = body_df['Score'].tolist()[0] 
+        view = body_df['Views'].tolist()[0] 
+        comment = body_df['Comments'].tolist()[0] 
+        favs = body_df['Favorites'].tolist()[0] 
+
         insecure_tup_with_snippets = matchCode(body)
         snip_cnt = insecure_tup_with_snippets.pop()
         insecure_tup = [x_ for x_ in insecure_tup_with_snippets]
@@ -149,19 +154,20 @@ def processBody(bodies, full_df):
         x_      = body_df['CreateDate'].tolist()[0] 
         createDate = x_.split('-')[0] + '-' + x_.split('-')[1]
 
-        list_.append((body_ID, 'TOTAL',   tot_insecurities, post_ID, createDate, snip_cnt))
-        list_.append((body_ID, 'PICKLE',  insecure_tup[0], post_ID, createDate,  snip_cnt))        
-        list_.append((body_ID, 'MARSHAL', insecure_tup[1], post_ID, createDate,  snip_cnt))
-        list_.append((body_ID, 'HASH',    insecure_tup[2], post_ID, createDate,  snip_cnt))         
-        list_.append((body_ID, 'CIPHER',  insecure_tup[3], post_ID, createDate,  snip_cnt))        
-        list_.append((body_ID, 'XSS',     insecure_tup[4], post_ID, createDate,  snip_cnt))
-        list_.append((body_ID, 'FUNC',    insecure_tup[5], post_ID, createDate,  snip_cnt))                        
-        list_.append((body_ID, 'URL',     insecure_tup[6], post_ID, createDate,  snip_cnt))         
-        list_.append((body_ID, 'RAND',    insecure_tup[7], post_ID, createDate,  snip_cnt))        
-        list_.append((body_ID, 'XML',     insecure_tup[8], post_ID, createDate,  snip_cnt))
-        list_.append((body_ID, 'FTP',     insecure_tup[9], post_ID, createDate,  snip_cnt))         
+        list_.append((body_ID, 'TOTAL',   tot_insecurities, post_ID, createDate, snip_cnt, score, view, comment, favs))
+        list_.append((body_ID, 'PICKLE',  insecure_tup[0], post_ID, createDate,  snip_cnt, score, view, comment, favs))        
+        list_.append((body_ID, 'MARSHAL', insecure_tup[1], post_ID, createDate,  snip_cnt, score, view, comment, favs))
+        list_.append((body_ID, 'HASH',    insecure_tup[2], post_ID, createDate,  snip_cnt, score, view, comment, favs))         
+        list_.append((body_ID, 'CIPHER',  insecure_tup[3], post_ID, createDate,  snip_cnt, score, view, comment, favs))        
+        list_.append((body_ID, 'XSS',     insecure_tup[4], post_ID, createDate,  snip_cnt, score, view, comment, favs))
+        list_.append((body_ID, 'FUNC',    insecure_tup[5], post_ID, createDate,  snip_cnt, score, view, comment, favs))                        
+        list_.append((body_ID, 'URL',     insecure_tup[6], post_ID, createDate,  snip_cnt, score, view, comment, favs))         
+        list_.append((body_ID, 'RAND',    insecure_tup[7], post_ID, createDate,  snip_cnt, score, view, comment, favs))        
+        list_.append((body_ID, 'XML',     insecure_tup[8], post_ID, createDate,  snip_cnt, score, view, comment, favs))
+        list_.append((body_ID, 'FTP',     insecure_tup[9], post_ID, createDate,  snip_cnt, score, view, comment, favs))         
+        
         cnt_ += 1
-    df_ = pd.DataFrame(list_, columns=['BODY_ID', 'TYPE', 'TYPE_COUNT', 'PARENT_ID', 'MONTH', 'SNIPPET_CNT'])
+    df_ = pd.DataFrame(list_, columns=['BODY_ID', 'TYPE', 'TYPE_COUNT', 'PARENT_ID', 'MONTH', 'SNIPPET_CNT', 'SCORE', 'VIEW', 'COMMENT', 'FAVORITE'])
     return df_
 
 def processVersionBody(bodies, full_df):
@@ -196,17 +202,18 @@ def processVersionBody(bodies, full_df):
 
 
 if __name__=='__main__':
-#    ans_dat = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PYTHON_ANS_DETAILS.csv'
-#    out_fil = 'DF_SO_GH_PY_ANS_DETAILS.PKL'
+   ans_dat = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PYTHON_ANS_DETAILS.csv'
+   out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
    
 #    ans_dat = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PY_ACC_ANS_DETAILS.csv'
-#    out_fil = 'DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
+#    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
 
    ans_df_ = pd.read_csv(ans_dat)
    bodies  = ans_df_['Body'].tolist()
    
    full_data_df = processBody(bodies, ans_df_)
    print full_data_df.head()
+
    ## for version code 
    #full_data_dict = processVersionBody(bodies, ans_df_)
 
