@@ -34,21 +34,29 @@ def getDurationInSO(end_, start_):
     d0 = date(sta_date[0], sta_date[1], sta_date[2])
     d1 = date(end_date[0], end_date[1], end_date[2])
     delta_ = d1 - d0
-    print   delta_.days , delta_.months     
-    return  delta_.days , delta_.months     
+    # print   delta_.days 
+    return  delta_.days 
 
-def getNormalizedRepu(user_data_df):
-    repu  = user_data_df['Reputation'].tolist()[0]
-    start = user_data_df['CreateDate'].tolist()[0]
-    end   = user_data_df['LastAccDate'].tolist()[0]
+def getNormalizedRepu(user_data_df, repu_type):
+    # print user_data_df
+    r_, c_ = user_data_df.shape
+    if r_ > 0:
+        repu  = user_data_df[repu_type].tolist()[0]
+        start = user_data_df['CreateDate'].tolist()[0]
+        end   = user_data_df['LastAccDate'].tolist()[0]
 
-    dura_days, dura_mont  = getDurationInSO(end, start )
+        dura_days  = getDurationInSO(end, start )
 
-    norm_repu = float(repu) / float(dura_days) 
-    
+        if dura_days < 1 : 
+            dura_days =  1 
+
+        norm_repu = float(repu) / float(dura_days) 
+    else:
+        norm_repu = float(1)
+    print repu, dura_days, norm_repu
     return norm_repu
 
-def compareReputation(user_df, user_post_df, answer_df):
+def compareReputation(user_df, user_post_df, answer_df, repu_typ):
     filtered_user_post_df = user_post_df[user_post_df['UserID'] != 0]
 
     total_df = answer_df[answer_df['TYPE']=='TOTAL']
@@ -63,12 +71,16 @@ def compareReputation(user_df, user_post_df, answer_df):
     none_user_IDs, atleast_one_user_IDs = [], []
 
     for postID in none_postID_list:
-        userID = filtered_user_post_df[filtered_user_post_df['PostID']==postID]['UserID'].tolist()[0]
-        none_user_IDs.append(userID)
+        userIDList = filtered_user_post_df[filtered_user_post_df['PostID']==postID]['UserID'].tolist()
+        if (len(userIDList) > 0 ):
+           userID = userIDList[0]
+           none_user_IDs.append(userID)
 
     for postID in at_least_one_postID_list:
-        userID = filtered_user_post_df[filtered_user_post_df['PostID']==postID]['UserID'].tolist()[0]
-        atleast_one_user_IDs.append(userID)
+        userIDList = filtered_user_post_df[filtered_user_post_df['PostID']==postID]['UserID'].tolist()
+        if (len(userIDList) > 0 ):
+           userID = userIDList[0]
+           atleast_one_user_IDs.append(userID)
 
     '''
     then get reputations 
@@ -77,12 +89,12 @@ def compareReputation(user_df, user_post_df, answer_df):
 
     for userID in none_user_IDs:
         userID_DF = user_df[user_df['AccountID']==userID]
-        norm_repu = getNormalizedRepu(userID_DF) 
+        norm_repu = getNormalizedRepu(userID_DF, repu_typ) 
         none_user_repu.append(norm_repu)
 
     for userID in atleast_one_user_IDs:
         userID_DF = user_df[user_df['AccountID']==userID]
-        norm_repu = getNormalizedRepu(userID_DF) 
+        norm_repu = getNormalizedRepu(userID_DF, repu_typ) 
         atleast_one_user_repu.append(norm_repu)
 
 
@@ -98,6 +110,6 @@ if __name__=='__main__':
    answer_file = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
    answer_df   = pd.read_csv(answer_file)
 
-   compareReputation(user_df_, user_post_df, answer_df)
+   compareReputation(user_df_, user_post_df, answer_df, 'Reputation')
 
 
