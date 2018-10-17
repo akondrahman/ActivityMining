@@ -12,6 +12,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 import string
 import gensim
 from gensim import corpora
+import os, time, datetime
 
 def preprocessTitle(single_ques_title):
     stop_words = stopwords.words('english')
@@ -32,8 +33,13 @@ def preprocessTitle(single_ques_title):
 
     return final_title
 
+def giveTimeStamp():
+  tsObj = time.time()
+  strToret = datetime.datetime.fromtimestamp(tsObj).strftime('%Y-%m-%d %H:%M:%S')
+  return strToret
 
 def modelTopics(list_of_titles, topic_cnt):
+    print "Topic modeling started at:", giveTimeStamp()
     clean_title_list = [preprocessTitle(single_title).split() for single_title in list_of_titles]      
     # print clean_title_list ## list of lists , each sublist is a list of strings incluided in the title 
     dictionary = corpora.Dictionary(clean_title_list)
@@ -44,6 +50,7 @@ def modelTopics(list_of_titles, topic_cnt):
     the_ldamodel = Lda(doc_term_matrix, num_topics=topic_cnt, id2word = dictionary, passes=50)
     # print the_ldamodel.print_topics(num_topics=topic_cnt, num_words=5)
     perp_lda = the_ldamodel.log_perplexity(doc_term_matrix)
+    print "Topic modeling ended at:", giveTimeStamp()    
     return perp_lda
 
 def constructQuestionDataset(answer_df, raw_ans_df_, ques_df, out_fil):
