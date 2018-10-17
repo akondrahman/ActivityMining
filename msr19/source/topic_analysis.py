@@ -6,6 +6,46 @@ Oct 17 2018
 import pandas as pd
 import numpy as np
 
+## LDA stuff 
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
+import string
+import gensim
+from gensim import corpora
+
+def preprocessTitle(single_ques_title):
+    stop_words = stopwords.words('english')
+    stop_words.extend(['python'])
+
+    exclude = set(string.punctuation)
+    lemma = WordNetLemmatizer()    
+
+    stop_free = " ".join([i for i in single_ques_title.lower().split() if i not in stop_words])  ## one string 
+    # print stop_free
+    punc_free = ''.join(ch for ch in stop_free if ch not in exclude) ## one string 
+    # print punc_free
+    splitted_title = punc_free.split(' ')  ## split single string to multiple 
+    encoded_list = [unicode(x_, 'utf-8') for x_ in splitted_title] ## lsit of strings , unicode error resolution: https://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte/35444608
+    # print encoded_list
+    final_title = " ".join(lemma.lemmatize(word) for word in encoded_list) ## one string 
+    # print final_title
+
+    return final_title
+
+
+def modelTopics(list_of_titles, topic_cnt):
+    clean_title_list = [preprocessTitle(single_title).split() for single_title in list_of_titles]      
+    # print clean_title_list ## list of lists , each sublist is a list of strings incluided in the title 
+    dictionary = corpora.Dictionary(clean_title_list)
+    doc_term_matrix = [dictionary.doc2bow(doc_) for doc_ in clean_title_list]
+    # print type(doc_term_matrix)  ## list if lists , each sublist is a list if tuples 
+    # print doc_term_matrix
+    Lda = gensim.models.ldamodel.LdaModel
+    the_ldamodel = Lda(doc_term_matrix, num_topics=topic_cnt, id2word = dictionary, passes=50)
+    # print the_ldamodel.print_topics(num_topics=topic_cnt, num_words=5)
+    perp_lda = the_ldamodel.log_perplexity(doc_term_matrix)
+    return perp_lda
+
 def constructQuestionDataset(answer_df, raw_ans_df_, ques_df, out_fil):
     at_least_one_postID_list = np.unique( answer_df[answer_df['INSECURE_SNIPPET_CNT'] > 0 ]['ID'].tolist() )
     none_postID_list         = np.unique( answer_df[answer_df['INSECURE_SNIPPET_CNT'] <= 0 ]['ID'].tolist() )
@@ -20,8 +60,13 @@ def constructQuestionDataset(answer_df, raw_ans_df_, ques_df, out_fil):
     at_least_one_ques_df = ques_df[ques_df['Id'].isin(at_least_one_ques_list)]
     none_ques_df         = ques_df[ques_df['Id'].isin(none_ques_list)]
 
-    at_least_one_ques_df.to_csv('ATLEAST_ONE_' + out_fil )
-    none_ques_df.to_csv('NONE_' + out_fil ) 
+    at_least_one_ques_title = at_least_one_ques_df['Title'].tolist()
+    none_ques_title         = none_ques_df['Title'].tolist()
+
+    topic_nums = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    for topic_num in topic_nums:
+        topic_model_perp = modelTopics(at_least_one_ques_title, topic_num)
+        print 'For topic count:{}, perplexity score:{}'.format(topic_num, topic_model_perp)
 
 if __name__=='__main__':
    answer_file = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
@@ -33,5 +78,5 @@ if __name__=='__main__':
    ques_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PY_QUES_DETAILS.csv'
    ques_df  = pd.read_csv(ques_fil)
 
-   constructQuestionDataset(answer_df, raw_ans_df, ques_df, '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/QUES_DF.csv')
+   constructQuestionDataset(answer_df, raw_ans_df, ques_df, '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/QUES_DF')
 
