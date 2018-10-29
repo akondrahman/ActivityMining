@@ -1,19 +1,17 @@
-// To download all post to GH mappings for all languages 
-
 const BigQuery = require('@google-cloud/bigquery');
 var fs = require('fs');
 
 const projectId = "githubsolidityquery";
-const sqlQuery = 'SELECT * FROM `LOL.SO_GH_DATA_FILTERED`' ; 
+const sqlQuery = 'SELECT * FROM `LOL.SO_PY_ANS_USERID`' ; 
+
+var out_fil = 'SO_PY_ANS_USERID.csv'
 
 const bigquery = new BigQuery({
   projectId: projectId,
   keyFilename: '', 
   location: 'US'
-
 });
 
-// Query options list: https://cloud.google.com/bigquery/docs/reference/v2/jobs/query
 const options = {
   query: sqlQuery,
   useLegacySql: false, 
@@ -21,7 +19,7 @@ const options = {
 
 let job;
 var fullData = '' ;
-var out_fil  = 'OUT_SO_GH_DATA_FILTERED.csv'
+
 
 bigquery
   .createQueryJob(options)
@@ -45,11 +43,17 @@ bigquery
   })
   .then(results => {
     const rows = results[0];
-    rows.forEach(function(row_as_json){
-      postID      = row_as_json['PostId'];
-      repoName    = row_as_json['RepoName'];
 
-      data   = postID.toString() + ',' + repoName  +  '\n' ;
+    rows.forEach(function(row_as_json){
+      userID   = row_as_json['OwnerUserId'];
+      postID   = row_as_json['PostID'];
+
+      if(userID==null)
+      {
+        userID = 0 
+      }
+
+      data   = userID.toString() + ',' + postID.toString() + '\n' ;
       fullData = fullData + data ; 
     });
 
@@ -57,7 +61,7 @@ bigquery
     if(err) {
         return console.log(err);
     }
-        console.log("SO+GH data dumped succesfully ... ");
+        console.log("SO+USER+ANSWERS data dumped succesfully ... ");
     }); 
 
   })

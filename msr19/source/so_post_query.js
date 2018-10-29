@@ -15,9 +15,7 @@ const bigquery = new BigQuery({
   projectId: projectId,
   keyFilename: '', 
   location: 'US'
-
 });
-
 
 const options = {
   query: sqlQuery,
@@ -62,6 +60,7 @@ bigquery
       postFavs    = row_as_json['FavoriteCount'];   
       //postAccID   = row_as_json['AcceptedAnswerId'];
       postAccID   = row_as_json['ParentId'];
+      postDate    = row_as_json['CreateDate'];
       
       if (postViews == null)
       {
@@ -91,7 +90,7 @@ bigquery
       postBody    = postBody.replace(/\n/g, ' ')            
       postBody    = postBody.replace(/=/g, ' ')      
       
-      data   = postID.toString() + ',' + postTitle + ',' + postBody  + ',' + postScore.toString() + ',' + postViews.toString() + ',' + postAnswers.toString() + ',' + postComments.toString() + ',' + postFavs.toString() + ',' + postAccID.toString() + '\n' ;
+      data   = postID.toString() + ',' + postTitle + ',' + postDate + ',' + postBody  + ',' + postScore.toString() + ',' + postViews.toString() + ',' + postAnswers.toString() + ',' + postComments.toString() + ',' + postFavs.toString() + ',' + postAccID.toString() + '\n' ;
       fullData = fullData + data ; 
     });
 
