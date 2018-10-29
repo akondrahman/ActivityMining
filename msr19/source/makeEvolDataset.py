@@ -78,11 +78,11 @@ if __name__=='__main__':
 #    Part - 1
 #    '''
 
-#    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
-#    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/DF_SO_GH_PY_ANS_RES.csv'
+# #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
+# #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/DF_SO_GH_PY_ANS_RES.csv'
 
-#    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
-#    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/DF_SO_GH_PY_ACC_ANS_RES.csv'
+# #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
+# #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/DF_SO_GH_PY_ACC_ANS_RES.csv'
 
 #    df_ = pickle.load(open(pkl_fil, 'rb'))
 #    makeEvolDataset(df_, out_fil)
@@ -91,21 +91,21 @@ if __name__=='__main__':
 #    Part - 2
 #    '''
 
-#    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
-#    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
+# #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
+# #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
 
-#    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
-#    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ACC_ANS_RES.csv'
+# #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ACC_ANS_DETAILS.PKL'
+# #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ACC_ANS_RES.csv'
 
 #    df_ = pickle.load(open(pkl_fil, 'rb'))
 #    makeIDDataset(df_, out_fil)
 
-   '''
-   Part - 3
-   '''
+#    '''
+#    Part - 3
+#    '''
 
-   pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
-   out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/INTEREST_SO_GH_PY_ANS_RES.csv'
+# #    pkl_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/DF_SO_GH_PY_ANS_DETAILS.PKL'
+# #    out_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/INTEREST_SO_GH_PY_ANS_RES.csv'
 
-   df_ = pickle.load(open(pkl_fil, 'rb'))
-   makeInterestDataset(df_, out_fil)
+# #    df_ = pickle.load(open(pkl_fil, 'rb'))
+# #    makeInterestDataset(df_, out_fil)

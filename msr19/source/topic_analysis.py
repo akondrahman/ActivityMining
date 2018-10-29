@@ -16,7 +16,8 @@ import os, time, datetime
 
 def preprocessTitle(single_ques_title):
     stop_words = stopwords.words('english')
-    stop_words.extend(['python'])
+    #print type(stop_words), len(stop_words)
+    stop_words.append('python')
 
     exclude = set(string.punctuation)
     lemma = WordNetLemmatizer()    
@@ -48,7 +49,7 @@ def modelTopics(list_of_titles, topic_cnt):
     # print doc_term_matrix
     Lda = gensim.models.ldamodel.LdaModel
     the_ldamodel = Lda(doc_term_matrix, num_topics=topic_cnt, id2word = dictionary, passes=50)
-    # print the_ldamodel.print_topics(num_topics=topic_cnt, num_words=5)
+    print the_ldamodel.print_topics(num_topics=topic_cnt, num_words=7)
     perp_lda = the_ldamodel.log_perplexity(doc_term_matrix) ##reff for negative perplexity: https://groups.google.com/forum/#!topic/gensim/uQxQiR2oC98, higher is better 
     print "Topic modeling ended at:", giveTimeStamp()    
     return perp_lda
@@ -63,24 +64,32 @@ def constructQuestionDataset(answer_df, raw_ans_df_, ques_df, out_fil):
     at_least_one_ques_list = np.unique( at_least_one_ans_df['ParentId'].tolist() )
     none_ques_list         = np.unique( none_ans_df['ParentId'].tolist() )
     print 'Questions with at least one insecure answer: {}, no insecure answer:{}'.format(len(at_least_one_ques_list), len(none_ques_list))
-
+    print '='*100
     at_least_one_ques_df = ques_df[ques_df['Id'].isin(at_least_one_ques_list)]
     none_ques_df         = ques_df[ques_df['Id'].isin(none_ques_list)]
 
     at_least_one_ques_title = at_least_one_ques_df['Title'].tolist()
     none_ques_title         = none_ques_df['Title'].tolist()
 
-    # topic_nums = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    # topic_nums = [2, 3, 4]
     perp_list = []
-    topic_nums = [(x_ + 1)*5 for x_ in xrange(20)]
-    print topic_nums
-    for topic_num in topic_nums:
-        topic_model_perp = modelTopics(at_least_one_ques_title, topic_num)
-        print 'For topic count:{}, perplexity score:{}'.format(topic_num, topic_model_perp)
-        perp_list.append((topic_num, abs(topic_model_perp)))
-        print '='*50
-    perp_df_ = pd.DataFrame(perp_list, columns=['Count', 'Perplexity'])
-    perp_df_.to_csv('PERP_INSECURE_TM.csv')
+    # topic_nums = [(x_ + 1)*5 for x_ in xrange(20)]
+    # print topic_nums
+    topic_num = 5
+    print 'At least one insecure answer ...'
+    modelTopics(at_least_one_ques_title, topic_num ) 
+    print '='*100
+    print 'No insecure answers ...'
+    modelTopics(none_ques_title, topic_num )
+    print '='*100
+    # for topic_num in topic_nums:
+    #     # topic_model_perp = modelTopics(at_least_one_ques_title, topic_num)    
+    #     topic_model_perp        = modelTopics(none_ques_title, topic_num)
+    #     print 'For topic count:{}, perplexity score:{}'.format(topic_num, topic_model_perp)
+    #     perp_list.append((topic_num, abs(topic_model_perp)))
+    #     print '='*50
+    # perp_df_ = pd.DataFrame(perp_list, columns=['Count', 'Perplexity'])
+    # # perp_df_.to_csv('PERP_INSECURE_TM.csv')
     # perp_df_.to_csv('PERP_NON_INSECURE_TM.csv')
 
 

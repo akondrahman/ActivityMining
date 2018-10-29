@@ -10,7 +10,7 @@ import cliffsDelta
 from datetime import date
 
 def compareDists(ls_1, ls_2, type_):
-    print "Interest metric:", type_
+    print "Reputation metric:", type_
     print "List#1 values [MEDIAN]:{}, [MEAN]:{}, [COUNT]:{}".format(np.median(list(ls_1)), np.mean(list(ls_1)), len(ls_1))
     print "List#2 values [MEDIAN]:{}, [MEAN]:{}, [COUNT]:{}".format(np.median(list(ls_2)), np.mean(list(ls_2)), len(ls_2))
     try:
@@ -35,7 +35,8 @@ def getDurationInSO(end_, start_):
     d1 = date(end_date[0], end_date[1], end_date[2])
     delta_ = d1 - d0
     # print   delta_.days 
-    return  delta_.days 
+    # return  delta_.days 
+    return delta_.days / 30 
 
 def getNormalizedRepu(user_data_df, repu_type):
     # print user_data_df
@@ -52,8 +53,10 @@ def getNormalizedRepu(user_data_df, repu_type):
 
         norm_repu = float(repu) / float(dura_days) 
     else:
+        repu = 1
+        dura_days = 1  
         norm_repu = float(1)
-    print repu, dura_days, norm_repu
+    # print repu, dura_days, norm_repu
     return norm_repu
 
 def compareReputation(user_df, user_post_df, answer_df, repu_typ):
@@ -81,7 +84,9 @@ def compareReputation(user_df, user_post_df, answer_df, repu_typ):
         if (len(userIDList) > 0 ):
            userID = userIDList[0]
            atleast_one_user_IDs.append(userID)
-
+    
+    none_user_IDs = np.unique(none_user_IDs)
+    atleast_one_user_IDs = np.unique(atleast_one_user_IDs)
     '''
     then get reputations 
     '''
@@ -96,7 +101,10 @@ def compareReputation(user_df, user_post_df, answer_df, repu_typ):
         userID_DF = user_df[user_df['AccountID']==userID]
         norm_repu = getNormalizedRepu(userID_DF, repu_typ) 
         atleast_one_user_repu.append(norm_repu)
-
+    '''
+    now compare
+    '''
+    compareDists(atleast_one_user_repu, none_user_repu, repu_typ)
 
 
 if __name__=='__main__':
@@ -110,6 +118,6 @@ if __name__=='__main__':
    answer_file = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
    answer_df   = pd.read_csv(answer_file)
 
-   compareReputation(user_df_, user_post_df, answer_df, 'Reputation')
+   compareReputation(user_df_, user_post_df, answer_df, 'Reputation') # Reputation,Ups,Downs,Views
 
 
