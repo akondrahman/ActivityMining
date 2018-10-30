@@ -34,6 +34,7 @@ def getRawOccurences(df_p):
 
 def getQuestionOccurrences(ans_df, raw_ans_df_, q_df):
     types = np.unique(ans_df['TYPE'].tolist())    
+    total_q_cnt = len( np.unique( q_df['Id'].tolist()) )
     for type_ in types:
         type_df = ans_df[ans_df['TYPE']==type_]
 
@@ -46,8 +47,7 @@ def getQuestionOccurrences(ans_df, raw_ans_df_, q_df):
         at_least_one_ques_list = list( np.unique( at_least_one_ans_df['ParentId'].tolist() ) )
         none_ques_list         = list( np.unique( none_ans_df['ParentId'].tolist() ) )
 
-        tot_ques_list = at_least_one_ques_list + none_ques_list
-        print 'Category:{}, smelly question count:{}, proportion:{}'.format(type_ , len(at_least_one_ques_list) , (float(at_least_one_ques_list) / float(tot_ques_list) ) * 100 )
+        print 'Category:{}, smelly question count:{}, proportion:{}'.format(type_ , len(at_least_one_ques_list) , (float(len(at_least_one_ques_list)) / float(len(total_q_cnt)) ) * 100 )
         print '-'*50                 
 
 
