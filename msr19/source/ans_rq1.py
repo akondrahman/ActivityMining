@@ -17,12 +17,22 @@ def getAllSnippetCount(df_p):
 
 def getRawOccurences(df_p):
     IDs = np.unique(df_p['ID'].tolist())    
+    tot_snip_cnt = getAllSnippetCount(df_p)
     print 'Total answers:' , len(IDs)
     types = np.unique(df_p['TYPE'].tolist())    
     for type_ in types:
         type_df = df_p[df_p['TYPE']==type_]
-        ans_IDs = np.unique( type_df['ID'].tolist() )
-        print 'Category:{}, raw count:{}, proportion:{}'.format(type_ , len(ans_IDs) , (len(ans_IDs) / len(IDs) ) * 100 )
+        smelly_df = type_df[type_df['INSECURE_SNIPPET_CNT'] > 0 ]
+        # Part # 1
+        ans_IDs = np.unique( smelly_df['ID'].tolist() )
+        print 'Category:{}, raw count:{}, proportion:{}'.format(type_ , len(ans_IDs) , (float(len(ans_IDs)) / float(len(IDs)) ) * 100 )
+        print '-'*50 
+        # Part # 2 
+        smelly_snippet_count = sum(list(np.unique(smelly_df['INSECURE_SNIPPET_CNT'].tolist())))
+        print 'Category:{}, snippet count:{}, proportion:{}'.format(type_ , smelly_snippet_count , (float(smelly_snippet_count) / float(tot_snip_cnt) ) * 100 )
+        print '-'*50         
+
+
 
 if __name__=='__main__':
    the_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
