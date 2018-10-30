@@ -26,20 +26,45 @@ def getRawOccurences(df_p):
         # Part # 1
         ans_IDs = np.unique( smelly_df['ID'].tolist() )
         print 'Category:{}, raw count:{}, proportion:{}'.format(type_ , len(ans_IDs) , (float(len(ans_IDs)) / float(len(IDs)) ) * 100 )
-        print '-'*50 
         # Part # 2 
-        smelly_snippet_count = sum(list(np.unique(smelly_df['INSECURE_SNIPPET_CNT'].tolist())))
+        smelly_snippet_count = sum(smelly_df['INSECURE_SNIPPET_CNT'].tolist())
         print 'Category:{}, snippet count:{}, proportion:{}'.format(type_ , smelly_snippet_count , (float(smelly_snippet_count) / float(tot_snip_cnt) ) * 100 )
         print '-'*50         
 
+
+def getQuestionOccurrences(ans_df, raw_ans_df_, q_df):
+    types = np.unique(ans_df['TYPE'].tolist())    
+    for type_ in types:
+        type_df = ans_df[ans_df['TYPE']==type_]
+
+        at_least_one_postID_list = np.unique( type_df[type_df['INSECURE_SNIPPET_CNT'] > 0 ]['ID'].tolist() )
+        none_postID_list         = np.unique( type_df[type_df['INSECURE_SNIPPET_CNT'] <= 0 ]['ID'].tolist() )
+
+        at_least_one_ans_df = raw_ans_df_[raw_ans_df_['Id'].isin( at_least_one_postID_list )]
+        none_ans_df         = raw_ans_df_[raw_ans_df_['Id'].isin( none_postID_list )]    
+
+        at_least_one_ques_list = list( np.unique( at_least_one_ans_df['ParentId'].tolist() ) )
+        none_ques_list         = list( np.unique( none_ans_df['ParentId'].tolist() ) )
+
+        tot_ques_list = at_least_one_ques_list + none_ques_list
+        print 'Category:{}, smelly question count:{}, proportion:{}'.format(type_ , len(at_least_one_ques_list) , (float(at_least_one_ques_list) / float(tot_ques_list) ) * 100 )
+        print '-'*50                 
 
 
 if __name__=='__main__':
    the_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ANS_RES.csv'
    the_df  = pd.read_csv(the_fil)
 
+   raw_ans_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PYTHON_ANS_DETAILS.csv'
+   raw_ans_df  = pd.read_csv(raw_ans_fil)
+
+   ques_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PY_QUES_DETAILS.csv'
+   ques_df  = pd.read_csv(ques_fil)
+
    print 'All snippets count:', getAllSnippetCount(the_df)
    print 'Occurrences count'
    print '='*100
    getRawOccurences(the_df)
+   print '='*100
+   getQuestionOccurrences(the_df, raw_ans_df, ques_df)
    print '='*100
