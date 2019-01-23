@@ -60,10 +60,10 @@ data_parsing = ['pickle.loads', 'pickle.load', 'pickle.Unpickler', 'cPickle.load
                 'xml.dom.pulldom.parse', 'xml.dom.pulldom.parseString', 'lxml.etree.parse', 'lxml.etree.fromstring', 'lxml.etree.RestrictedElement', 
                 'xml.etree.GlobalParserTLS', 'lxml.etree.getDefaultParser', 'lxml.etree.check_docinfo'
                ] 
-cipher = ['hashlib.md5', 'cryptography.hazmat.primitives .hashes.MD5', 'Crypto.Hash.MD2.new', 'Crypto.Hash.MD4.new', 'Crypto.Hash.MD5.new', 
+cipher = ['hashlib.md5', 'cryptography.hazmat.primitives.hashes.MD5', 'Crypto.Hash.MD2.new', 'Crypto.Hash.MD4.new', 'Crypto.Hash.MD5.new', 
           'Crypto.Cipher.ARC2.new', 'Crypto.Cipher.ARC4.new', 'Crypto.Cipher.Blowfish.new', 'Crypto.Cipher.DES.new', 'Crypto.Cipher.XOR.new', 
           'cryptography.hazmat.primitives.ciphers.algorithms.ARC4', 'cryptography.hazmat.primitives.ciphers.algorithms.Blowfish', 
-          'cryptography.hazmat.primitives.ciphers.algorithms.IDEA', 'cryptography.hazmat.primitives .ciphers.modes.ECB', 
+          'cryptography.hazmat.primitives.ciphers.algorithms.IDEA', 'cryptography.hazmat.primitives.ciphers.modes.ECB', 
           'random.random', 'random.randrange', 'random.randint', 'random.choice', 'random.uniform', 'random.triangular'
          ] 
 xss_scripting = ['django.utils.safestring.mark_safe']

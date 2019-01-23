@@ -3,11 +3,10 @@ Compare interests
 Akond Rahman 
 Oct 16 2018 
 '''
-from scipy import stats
 import pandas as pd
 import numpy as np
 import cliffsDelta
-
+from scipy import stats
 
 def compareDists(ls_1, ls_2, type_):
     print "Interest metric:", type_

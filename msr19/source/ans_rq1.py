@@ -35,6 +35,7 @@ def getRawOccurences(df_p):
 def getQuestionOccurrences(ans_df, raw_ans_df_, q_df):
     types = np.unique(ans_df['TYPE'].tolist())    
     total_q_cnt = len( np.unique( q_df['Id'].tolist()) )
+    print 'Total question count:', total_q_cnt
     for type_ in types:
         type_df = ans_df[ans_df['TYPE']==type_]
 
@@ -47,7 +48,7 @@ def getQuestionOccurrences(ans_df, raw_ans_df_, q_df):
         at_least_one_ques_list = list( np.unique( at_least_one_ans_df['ParentId'].tolist() ) )
         none_ques_list         = list( np.unique( none_ans_df['ParentId'].tolist() ) )
 
-        print 'Category:{}, smelly question count:{}, proportion:{}'.format(type_ , len(at_least_one_ques_list) , (float(len(at_least_one_ques_list)) / float(len(total_q_cnt)) ) * 100 )
+        print 'Category:{}, smelly question count:{}, proportion:{}'.format(type_ , len(at_least_one_ques_list) , (float(len(at_least_one_ques_list)) / float(total_q_cnt) ) * 100 )
         print '-'*50                 
 
 
@@ -61,10 +62,17 @@ if __name__=='__main__':
    ques_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/data/SO_GH_PY_QUES_DETAILS.csv'
    ques_df  = pd.read_csv(ques_fil)
 
+   '''
+   Add accepted answer data: get raw occurrences 
+   '''
+   #the_fil = '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/IDS_SO_GH_PY_ACC_ANS_RES.csv'
+   #the_df  = pd.read_csv(the_fil)
+
    print 'All snippets count:', getAllSnippetCount(the_df)
    print 'Occurrences count'
    print '='*100
    getRawOccurences(the_df)
    print '='*100
+
    getQuestionOccurrences(the_df, raw_ans_df, ques_df)
    print '='*100

@@ -55,7 +55,7 @@ def processIssues(lis):
 
 
 if __name__=='__main__':
-   getIssues() 
+#    getIssues() 
 
 
 #    fileName = 'PAGINATED_ISSUES_JSON_PKL'

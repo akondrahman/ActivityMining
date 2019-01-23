@@ -8,6 +8,13 @@ import pandas as pd
 import numpy as np
 import cliffsDelta
 from datetime import date
+import os 
+
+def dumpContentIntoFile(strP, fileP):
+  fileToWrite = open( fileP, 'w')
+  fileToWrite.write(strP )
+  fileToWrite.close()
+  return str(os.stat(fileP).st_size)
 
 def compareDists(ls_1, ls_2, type_):
     print "Reputation metric:", type_
@@ -59,6 +66,17 @@ def getNormalizedRepu(user_data_df, repu_type):
     # print repu, dura_days, norm_repu
     return norm_repu
 
+def dumpReputation(insecure, neutral):
+    str_ = ''
+    for elem in insecure:
+        str_ = str_ + str(elem) + ',' + '\n'
+    dumpContentIntoFile(str_ , '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/FOR_PAPER_INSECURE_ANSWER.csv' )
+
+    str_ = ''
+    for elem in neutral:
+        str_ = str_ + str(elem) + ',' + '\n'
+    dumpContentIntoFile(str_ , '/Users/akond/Documents/AkondOneDrive/MSR-MiningChallenge/msr19/output/FOR_PAPER_NEUTRAL_ANSWER.csv' )
+
 def compareReputation(user_df, user_post_df, answer_df, repu_typ):
     filtered_user_post_df = user_post_df[user_post_df['UserID'] != 0]
 
@@ -105,6 +123,7 @@ def compareReputation(user_df, user_post_df, answer_df, repu_typ):
     now compare
     '''
     compareDists(atleast_one_user_repu, none_user_repu, repu_typ)
+    dumpReputation(atleast_one_user_repu, none_user_repu)
 
 
 if __name__=='__main__':
